@@ -15,6 +15,7 @@ from requests import HTTPError
 from PIL import Image
 import os
 
+app = Flask(__name__)
 sessionStorage = {}
 games = {}
 profiles = {}
@@ -176,7 +177,7 @@ def printchessboard(s):
 def main():
     event = request.json
     yandex = YandexImages()
-    yandex.set_auth_token(token='y0_AgAAAABVMSWEAAT7owAAAADfiH7Swo8jDnWDRlCVLPMC_o3zj8Pozkg')
+    yandex.set_auth_token(token = 'y0_AgAAAABVMSWEAAT7owAAAADfiH7Swo8jDnWDRlCVLPMC_o3zj8Pozkg')
     yandex.skills = '60459c66-a701-463b-8f24-bada3d7cf736'
     response = {
         "version": event["version"],
@@ -187,13 +188,9 @@ def main():
         }
     }
     morph = pymorphy2.MorphAnalyzer()
-    qq = " ".join(
-        [morph.parse(i)[0].normal_form for i in event['request']['original_utterance'].lower().rstrip(".").split()])
+    qq = " ".join([morph.parse(i)[0].normal_form for i in event['request']['original_utterance'].lower().rstrip(".").split()])
     if any([i in ("помощь", "что ты уметь", "подсказать") for i in qq.split()]):
-        otv = random.choice([
-                                "Вы можете начать игру с другом, компьютером, или случайным человеком. Либо вы можете посмотреть свой рейтинг по команде профиль",
-                                "В данном навыке вы можете играть в шахматы с другом, компьютером, или случайным человеком. Также вы можете зайти в свой профиль и увидеть статистику",
-                                "Я умею запускать с другом, компьютером, или случайным человеком. Либо показать ваш рейтинг по команде профиль"])
+        otv = random.choice(["Вы можете начать игру с другом, компьютером, или случайным человеком. Либо вы можете посмотреть свой рейтинг по команде профиль", "В данном навыке вы можете играть в шахматы с другом, компьютером, или случайным человеком. Также вы можете зайти в свой профиль и увидеть статистику", "Я умею запускать с другом, компьютером, или случайным человеком. Либо показать ваш рейтинг по команде профиль"])
         response["response"]["text"] = otv
         response['response']['buttons'] = [{"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         return response
@@ -206,27 +203,24 @@ def main():
         profiles[event['session']['user_id']] = 0
         return response
     if event['session']['new']:
-        response["response"][
-            "text"] = "Приветствую в навыке 'Играй вместе'. Вы можете попросить помощь, посмотреть свой рейтинг, либо начать играть."
-        response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True},
-                                           {"title": "Профиль", "hide": True}]
+        response["response"]["text"] = "Приветствую в навыке 'Играй вместе'. Вы можете попросить помощь, посмотреть свой рейтинг, либо начать играть."
+        response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         if event['session']['user_id'] not in profiles:
             profiles[event['session']['user_id']] = 0
     elif event['session']['user_id'] in games:
         if any([i in ('выход', 'закончить', 'выйти', 'назад') for i in qq.split()]):
             games.pop(event['session']['user_id'])
-            response["response"][
-                "text"] = "Вы вернулись в главное меню. Можете попросить помощи, посмотреть профиль, или начать игру."
-            response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True},
-                                               {"title": "Профиль", "hide": True}]
+            response["response"]["text"] = "Вы вернулись в главное меню. Можете попросить помощи, посмотреть профиль, или начать игру."
+            response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         elif games[event['session']['user_id']][1] == "none":
             if any([i == "друг" for i in qq.split()]):
-                # games[event['session']['user_id']][1] = "friend"
-                response["response"][
-                    "text"] = "Эта ветка навыка ещё не закончена! Совсем скоро вы сможете поиграть с другом"
-                response['response']['buttons'] = [{'title': "Друг", 'hide': True},
-                                                   {'title': "Компьютер", 'hide': True},
-                                                   {'title': "Случайный игрок", 'hide': True}]
+                games[event['session']['user_id']][1] = "friendchoice"
+                response["response"]["text"] = "Создать комнату или присоединиться? Если хотите создать, то введите код комнаты."
+                cd = str(random.randint(100, 999))
+                while cd in sessionStorage:
+                    cd = str(random.randint(100, 999))
+                response['response']['buttons'] = [{'title': cd, 'hide': True}, {'title': "Присоединиться", 'hide': True}]
+
             elif any([i == "компьютер" for i in qq.split()]):
                 games[event['session']['user_id']][1] = "ai"
                 sessionStorage[event['session']['user_id']] = chess.Board()
@@ -236,7 +230,7 @@ def main():
                     f.write(board_svg)
                 drawing = svg2rlg('/tmp/board.svg')
                 renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
-                image_path = "/tmp/board.png"
+                image_path="/tmp/board.png"
                 img = Image.open(image_path)
                 new_image = img.resize((172, 172))
                 third_image = new_image.crop((-108, 0, 172 + 108, 172))
@@ -250,23 +244,105 @@ def main():
                 response["response"]["text"] = random.choice(["Да начнётся игра!", "Удачной игры!"])
             elif any([i == "случайный" for i in qq.split()]):
                 # games[event['session']['user_id']][1] = "random"
-                response['response'][
-                    'text'] = 'Эта ветка навыка ещё не закончена! Совсем скоро вы сможете поиграть с человеком'
-                response['response']['buttons'] = [{'title': "Друг", 'hide': True},
-                                                   {'title': "Компьютер", 'hide': True},
-                                                   {'title': "Случайный игрок", 'hide': True}]
+                response['response']['text'] = 'Эта ветка навыка ещё не закончена! Совсем скоро вы сможете поиграть с человеком'
+                response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
             else:
                 response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то другое"
-                response['response']['buttons'] = [{'title': "Друг", 'hide': True},
-                                                   {'title': "Компьютер", 'hide': True},
-                                                   {'title': "Случайный игрок", 'hide': True}]
-
+                response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
+        elif games[event['session']['user_id']][1] == 'friendconnect':
+            if all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
+                code = "".join([str(wordtonum[i]) if i in wordtonum else i for i in qq.split()])
+                if code in sessionStorage:
+                    friendsgames[event['session']['user_id']] = code
+                    games[event['session']['user_id']][1] = "friendgame"
+                    response['response']['text'] = "Игра началась! Сделайте ход."
+                else:
+                    response['response']['text'] = "Такой комнаты нет! Убедитесь, что ваш друг её создал и перепроверьте код. " + code + " коды которые есть: " + " ".join(list(sessionStorage.keys()))
+            else:
+                response['response']['text'] = "Некорректно введён код! Вводите код без лишних слов."
+        elif games[event['session']['user_id']][1] == 'friendgame':
+            code = friendsgames[event['session']['user_id']]
+            if sessionStorage[code][1] == event['session']['user_id']:
+                response['response']['text'] = "Ваш противник ещё не сходил! Ожидайте."
+                response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
+            else:
+                if any([i in ("проверить", "проверка") for i in qq.split()]):
+                    response['response']['text'] = "противник совершил ход"
+                    board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
+                    with open("/tmp/board.svg", "wb") as f:
+                        f.write(board_svg)
+                    drawing = svg2rlg('/tmp/board.svg')
+                    renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                    image_path="/tmp/board.png"
+                    img = Image.open(image_path)
+                    new_image = img.resize((172, 172))
+                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                    third_image.save('/tmp/answer.png')
+                    image = yandex.downloadImageFile('/tmp/answer.png')
+                    response['response']['card'] = {}
+                    response['response']['card']['image_id'] = image["id"]
+                    response['response']['card']['type'] = "BigImage"
+                    response['response']['card']['title'] = "Шахматы"
+                    response['response']['card']['description'] = random.choice(["Ваш ход!", "Противник совершил ход!"])
+                    return response
+                qq = rustochess(qq)
+                if qq not in [str(i) for i in sessionStorage[code][0].legal_moves]:
+                    response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А 2 на А4, либо вводите a2a4", "Неправильно! Вводите в формате b2b4, либо говорите Б 2 на Б 4"])
+                    board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
+                    with open("/tmp/board.svg", "wb") as f:
+                        f.write(board_svg)
+                    drawing = svg2rlg('/tmp/board.svg')
+                    renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                    image_path="/tmp/board.png"
+                    img = Image.open(image_path)
+                    new_image = img.resize((172, 172))
+                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                    third_image.save('/tmp/answer.png')
+                    image = yandex.downloadImageFile('/tmp/answer.png')
+                    response['response']['card'] = {}
+                    response['response']['card']['image_id'] = image["id"]
+                    response['response']['card']['type'] = "BigImage"
+                    response['response']['card']['title'] = "Шахматы"
+                    response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
+                    return response
+                sessionStorage[code][0].push_uci(qq)
+                sessionStorage[code][1] = event['session']['user_id']
+                response['response']['text'] = "Ожидайте хода соперника."
+                response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
+                board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
+                with open("/tmp/board.svg", "wb") as f:
+                    f.write(board_svg)
+                drawing = svg2rlg('/tmp/board.svg')
+                renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                image_path="/tmp/board.png"
+                img = Image.open(image_path)
+                new_image = img.resize((172, 172))
+                third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                third_image.save('/tmp/answer.png')
+                image = yandex.downloadImageFile('/tmp/answer.png')
+                response['response']['card'] = {}
+                response['response']['card']['image_id'] = image["id"]
+                response['response']['card']['type'] = "BigImage"
+                response['response']['card']['title'] = "Шахматы"
+                response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
+        elif games[event['session']['user_id']][1] == 'friendchoice':
+            response['response']['buttons'] = [{'title': "Присоединиться", 'hide': True}]
+            if any([i in ('зайти', "присоединиться", "найти") for i in qq.split()]):
+                games[event['session']['user_id']][1] = 'friendconnect'
+                response['response']['text'] = "Введите код комнаты. Спросите его у друга, который создал комнату"
+            elif all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
+                code = "".join([str(wordtonum[i]) if i in wordtonum else i for i in qq.split()])
+                if code in sessionStorage:
+                    response['response']['text'] = "Такой код уже есть в списке игр! Придумайте другой."
+                    return response
+                games[event['session']['user_id']][1] = 'friendgame'
+                friendsgames[event['session']['user_id']] = code
+                sessionStorage[code] = [chess.Board(), event['session']['user_id']]
+                response['response']['text'] = "Комната создана! Скажите другу зайти по вашему коду и сделать ход. " + code
         elif games[event['session']['user_id']][0] == 'chess' and games[event['session']['user_id']][1] == 'ai':
             qq = rustochess(qq)
             if qq not in [str(i) for i in sessionStorage[event['session']['user_id']].legal_moves]:
-                response['response']['text'] = random.choice(
-                    ["Неправильный ход. Говорите в формате А 2 на А4, либо вводите a2a4",
-                     "Неправильно! Вводите в формате b2b4, либо говорите Б 2 на Б 4"]) + qq
+                response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А 2 на А4, либо вводите a2a4", "Неправильно! Вводите в формате b2b4, либо говорите Б 2 на Б 4"]) + qq
                 return response
             lst = amove(qq, aiboards[event['session']['user_id']])
             sessionStorage[event['session']['user_id']].push_uci(qq)
@@ -278,7 +354,7 @@ def main():
                 f.write(board_svg)
             drawing = svg2rlg('/tmp/board.svg')
             renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
-            image_path = "/tmp/board.png"
+            image_path="/tmp/board.png"
             img = Image.open(image_path)
             new_image = img.resize((172, 172))
             third_image = new_image.crop((-108, 0, 172 + 108, 172))
@@ -292,14 +368,10 @@ def main():
             # response["response"]["text"] = printchessboard(str(sessionStorage[event['session']['user_id']]))
         else:
             response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то другое"
-            response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True},
-                                               {'title': "Случайный игрок", 'hide': True}]
+            response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
     else:
         if any([i in ("помощь", "что ты уметь", "подсказать") for i in qq.split()]):
-            otv = random.choice([
-                                    "Вы можете начать игру с другом, компьютером, или случайным человеком. Либо вы можете посмотреть свой рейтинг по команде профиль",
-                                    "В данном навыке вы можете играть в шахматы с другом, компьютером, или случайным человеком. Также вы можете зайти в свой профиль и увидеть статистику",
-                                    "Я умею запускать с другом, компьютером, или случайным человеком. Либо показать ваш рейтинг по команде профиль"])
+            otv = random.choice(["Вы можете начать игру с другом, компьютером, или случайным человеком. Либо вы можете посмотреть свой рейтинг по команде профиль", "В данном навыке вы можете играть в шахматы с другом, компьютером, или случайным человеком. Также вы можете зайти в свой профиль и увидеть статистику", "Я умею запускать с другом, компьютером, или случайным человеком. Либо показать ваш рейтинг по команде профиль"])
             response["response"]["text"] = otv
             response['response']['buttons'] = [{"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         elif any([i in ("профиль", "статистика", "рейтинг") for i in qq.split()]):
@@ -320,21 +392,15 @@ def main():
             response['response']['card']['image_id'] = '213044/25964e6c4a27e7818633'
             response['response']['card']['type'] = "BigImage"
             response['response']['card']['title'] = "Шахматы"
-            response['response']['card']['description'] = random.choice(
-                ["Выберите соперника: друг, компьютер, или случайный игрок",
-                 "C кем хотите играть? С другом, компьютером, или случайным игроком"])
-            response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True},
-                                               {'title': "Случайный игрок", 'hide': True}]
+            response['response']['card']['description'] = random.choice(["Выберите соперника: друг, компьютер, или случайный игрок", "C кем хотите играть? С другом, компьютером, или случайным игроком"])
+            response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
             response['response']['text'] = "Выберите соперника: друг, компьютер, или случайный игрок"
         elif any([i in ('выход', 'завершить', 'выйти') for i in qq.split()]):
             response['response']['text'] = "Буду ждать вас снова!"
             response['response']["end_session"] = True
         else:
-            response["response"]["text"] = random.choice(["Извините, я вас не понимаю. Попробуйте попросить помощь",
-                                                          "Я не знаю таких команд. Попробуйте спросить что я умею",
-                                                          "Увы, на такое меня не программировали. Попросите помощи"])
-            response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True},
-                                               {"title": "Профиль", "hide": True}]
+            response["response"]["text"] = random.choice(["Извините, я вас не понимаю. Попробуйте попросить помощь", "Я не знаю таких команд. Попробуйте спросить что я умею", "Увы, на такое меня не программировали. Попросите помощи"])
+            response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
     return json.dumps(response)
 
 
