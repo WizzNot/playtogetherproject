@@ -276,15 +276,15 @@ def main():
                 response['response']['text'] = "Ваш противник ещё не сходил! Ожидайте."
                 response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
             else:
-                if sessionStorage[event['session']['user_id']].is_stalemate():
+                if sessionStorage[code][0].is_stalemate():
                     response['response']['text'] = "Ничья! Хорошая игра."
-                    sessionStorage.pop(friendsgames[event['session']['user_id']])
+                    sessionStorage.pop(code)
                     friendsgames.pop(event['session']['user_id'])
                     return response
-                elif sessionStorage[event['session']['user_id']].is_checkmate():
+                elif sessionStorage[code][0].is_checkmate():
                     response['response']['text'] = "Вы проиграли! Попробуйте ещё раз."
                     games.pop(event['session']['user_id'])
-                    sessionStorage.pop(friendsgames[event['session']['user_id']])
+                    sessionStorage.pop(code)
                     friendsgames.pop(event['session']['user_id'])
                     return response
                 if any([i in ("проверить", "проверка") for i in qq.split()]):
@@ -328,16 +328,16 @@ def main():
                     return response
                 sessionStorage[code][0].push_uci(qq)
                 sessionStorage[code][1] = event['session']['user_id']
-                if sessionStorage[event['session']['user_id']].is_stalemate():
+                if sessionStorage[code][0].is_stalemate():
                     response['response']['text'] = "Ничья! Хорошая игра."
                     games.pop(event['session']['user_id'])
-                    sessionStorage.pop(event['session']['user_id'])
+                    sessionStorage.pop(code)
                     return response
-                elif sessionStorage[event['session']['user_id']].is_checkmate():
+                elif sessionStorage[code][0].is_checkmate():
                     response['response']['text'] = "Вы победили! Хорошая игра."
                     games.pop(event['session']['user_id'])
                     aiboards.pop(event['session']['user_id'])
-                    sessionStorage.pop(event['session']['user_id'])
+                    sessionStorage.pop(code)
                     return response
                 response['response']['text'] = "Ожидайте хода соперника."
                 response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
