@@ -1,5 +1,3 @@
-from flask import Flask, request
-import json
 import chess
 import chess.svg
 from ai import amove
@@ -13,20 +11,31 @@ import time
 import requests
 from requests import HTTPError
 from PIL import Image
-import os
+from flask import Flask
+import json
+
 
 app = Flask(__name__)
+wordtonum = {"ноль": 0, "тридцати": 30, "сорока": 40, "пятидесяти": 50, "десяти": 10, "двадцати":20, 'один': 1, "шестидесяти": 60, "семидесяти": 70, "восьмидесяти": 80, "одна": 1, 'два': 2, "две": 2, 'три': 3, 'четыре': 4, 'пять': 5,
+     'шесть': 6, 'семь' : 7, 'восемь': 8, 'девять': 9, 'десять': 10, 'двадцать': 20,
+     'тридцать': 30, 'сорок': 40, 'пятьдесят': 50, 'шестьдесят': 60, 'семьдесят': 70,
+     'восемьдесят': 80, 'девяносто': 90, 'одиннадцать': 11, 'двенадцать': 12, 'тринадцать': 13,
+     'четырнадцать': 14, 'пятнадцать': 15, 'шестнадцать': 16, 'семнадцать': 17, 'восемнадцать': 18,
+     'девятнадцать': 19, "сто": 100, "двести": 200, "триста": 300, "четыреста": 400, "пятьсот": 500,
+     'шестьсот': 600, "семьсот": 700,"восемьсот": 800, "девятьсот": 900, "тысяча": 1, "тысяч": 1, "тысячи": 1, "десятых": 1,
+     "нуля": 0, "одного": 1, "двух": 2, "трех": 3, "четырех": 4, "пяти": 5, "шести": 6, "семи": 7, "восьми": 8, "девяти": 9}
 sessionStorage = {}
 games = {}
 profiles = {}
 listofgames = ["шахматы"]
 aiboards = {}
+friendsgames = {}
 
 
 class YandexImages(object):
     def __init__(self):
         self.SESSION = requests.Session()
-        # self.SESSION.headers.update(AUTH_HEADER)
+        #self.SESSION.headers.update(AUTH_HEADER)
 
         self.API_VERSION = 'v1'
         self.API_BASE_URL = 'https://dialogs.yandex.net/api/'
@@ -41,9 +50,9 @@ class YandexImages(object):
             'Authorization': 'OAuth %s' % token
         }
 
-    def log(self, error_text, response):
-        log_file = open('YandexApi.log', 'a')
-        log_file.write(error_text + '\n')  # +response)
+    def log(self, error_text,response):
+        log_file = open('YandexApi.log','a')
+        log_file.write(error_text+'\n')#+response)
         log_file.close()
 
     def validate_api_response(self, response, required_key_name=None):
@@ -73,7 +82,7 @@ class YandexImages(object):
     # - used - Занятое место                       #
     ################################################
     def checkOutPlace(self):
-        result = self.SESSION.get(self.API_URL + 'status')
+        result = self.SESSION.get(self.API_URL+'status')
         content = self.validate_api_response(result)
         if content != None:
             return content['images']['quota']
@@ -87,6 +96,7 @@ class YandexImages(object):
     # - origUrl - Адрес изображения.               #
     ################################################
 
+
     ################################################
     # Загрузка изображения из файла                #
     #                                              #
@@ -96,7 +106,7 @@ class YandexImages(object):
     ################################################
     def downloadImageFile(self, img):
         path = 'skills/{skills_id}/images'.format(skills_id=self.skills)
-        result = self.SESSION.post(url=self.API_URL + path, files={'file': (img, open(img, 'rb'))})
+        result = self.SESSION.post(url = self.API_URL+path,files={'file':(img,open(img,'rb'))})
         content = self.validate_api_response(result)
         if content != None:
             return content['image']
@@ -111,7 +121,7 @@ class YandexImages(object):
     ################################################
     def getLoadedImages(self):
         path = 'skills/{skills_id}/images'.format(skills_id=self.skills)
-        result = self.SESSION.get(url=self.API_URL + path)
+        result = self.SESSION.get(url = self.API_URL+path)
         content = self.validate_api_response(result)
         if content != None:
             return content['images']
@@ -123,8 +133,8 @@ class YandexImages(object):
     # В случае успеха вернет 'ok'	               #
     ################################################
     def deleteImage(self, img_id):
-        path = 'skills/{skills_id}/images/{img_id}'.format(skills_id=self.skills, img_id=img_id)
-        result = self.SESSION.delete(url=self.API_URL + path)
+        path = 'skills/{skills_id}/images/{img_id}'.format(skills_id=self.skills,img_id = img_id)
+        result = self.SESSION.delete(url=self.API_URL+path)
         content = self.validate_api_response(result)
         if content != None:
             return content['result']
@@ -138,21 +148,20 @@ class YandexImages(object):
             image_id = image['id']
             if image_id:
                 if self.deleteImage(image_id):
-                    success += 1
+                    success+=1
                 else:
                     fail += 1
             else:
                 fail += 1
 
-        return {'success': success, 'fail': fail}
+        return {'success':success,'fail':fail}
+
 
 
 def rustochess(qq):
     otv = ''
-    ruseng = {"джи": "g", "ф": "f", "а": "a", "б": "b", "ц": "c", "си": "c", "д": "d", "ди": "d", "е": "e", "и": "e",
-              "эф": "f", "г": "g", "аш": "h", "х": "h", "далее": "d", "быть": "e"}
-    wordnum = {"один": "1", "два": "2", "три": "3", "четыре": "4", "пять": "5", "шесть": "6", "семь": "7",
-               "восемь": "8"}
+    ruseng = {"джи": "g", "ф": "f", "а": "a", "б": "b", "ц": "c", "си": "c", "д": "d", "ди": "d", "е": "e", "и": "e", "эф": "f", "г": "g", "аш": "h", "х": "h", "далее": "d", "быть": "e"}
+    wordnum = {"один": "1", "два": "2", "три": "3", "четыре": "4", "пять": "5", "шесть": "6", "семь": "7", "восемь": "8"}
     for i in qq.split():
         if i in ruseng:
             otv += ruseng[i]
