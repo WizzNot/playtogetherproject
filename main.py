@@ -11,8 +11,9 @@ import time
 import requests
 from requests import HTTPError
 from PIL import Image
-from flask import Flask
+from flask import Flask, request, jsonify
 import json
+import os
 
 
 app = Flask(__name__)
@@ -275,6 +276,17 @@ def main():
                 response['response']['text'] = "Ваш противник ещё не сходил! Ожидайте."
                 response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
             else:
+                if sessionStorage[event['session']['user_id']].is_stalemate():
+                    response['response']['text'] = "Ничья! Хорошая игра."
+                    sessionStorage.pop(friendsgames[event['session']['user_id']])
+                    friendsgames.pop(event['session']['user_id'])
+                    return response
+                elif sessionStorage[event['session']['user_id']].is_checkmate():
+                    response['response']['text'] = "Вы проиграли! Попробуйте ещё раз."
+                    games.pop(event['session']['user_id'])
+                    sessionStorage.pop(friendsgames[event['session']['user_id']])
+                    friendsgames.pop(event['session']['user_id'])
+                    return response
                 if any([i in ("проверить", "проверка") for i in qq.split()]):
                     response['response']['text'] = "противник совершил ход"
                     board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
@@ -316,6 +328,17 @@ def main():
                     return response
                 sessionStorage[code][0].push_uci(qq)
                 sessionStorage[code][1] = event['session']['user_id']
+                if sessionStorage[event['session']['user_id']].is_stalemate():
+                    response['response']['text'] = "Ничья! Хорошая игра."
+                    games.pop(event['session']['user_id'])
+                    sessionStorage.pop(event['session']['user_id'])
+                    return response
+                elif sessionStorage[event['session']['user_id']].is_checkmate():
+                    response['response']['text'] = "Вы победили! Хорошая игра."
+                    games.pop(event['session']['user_id'])
+                    aiboards.pop(event['session']['user_id'])
+                    sessionStorage.pop(event['session']['user_id'])
+                    return response
                 response['response']['text'] = "Ожидайте хода соперника."
                 response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
                 board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
@@ -355,7 +378,27 @@ def main():
                 return response
             lst = amove(qq, aiboards[event['session']['user_id']])
             sessionStorage[event['session']['user_id']].push_uci(qq)
+            if sessionStorage[event['session']['user_id']].is_stalemate():
+                response['response']['text'] = "Ничья! Хорошая игра."
+                games.pop(event['session']['user_id'])
+                sessionStorage.pop(event['session']['user_id'])
+                return response
+            elif sessionStorage[event['session']['user_id']].is_checkmate():
+                response['response']['text'] = "Победа! Хорошая игра."
+                games.pop(event['session']['user_id'])
+                sessionStorage.pop(event['session']['user_id'])
+                return response
             sessionStorage[event['session']['user_id']].push_uci(lst[0])
+            if sessionStorage[event['session']['user_id']].is_stalemate():
+                response['response']['text'] = "Ничья! Хорошая игра."
+                games.pop(event['session']['user_id'])
+                sessionStorage.pop(event['session']['user_id'])
+                return response
+            elif sessionStorage[event['session']['user_id']].is_checkmate():
+                response['response']['text'] = "Вы проиграли! Попробуйте ещё раз."
+                games.pop(event['session']['user_id'])
+                sessionStorage.pop(event['session']['user_id'])
+                return response
             aiboards[event['session']['user_id']] = lst[1]
             response["response"]["text"] = "Противник сходил " + lst[0] + ". Ваш ход"
             board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')

@@ -6,4 +6,3 @@ reportlab
 requests
 Pillow
 flask
-json
