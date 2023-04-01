@@ -1,0 +1,9 @@
+chess
+numpy
+pymorphy2
+svglib
+reportlab
+requests
+Pillow
+flask
+json
