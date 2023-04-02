@@ -258,7 +258,7 @@ def main():
                 bot_board_shoot = generate_white_board()
                 player_board_shoot = generate_white_board()
                 bot_memory = []
-                display_board(player_board, player_board_shoot, bot_board, "/Pl9Xy.png", "kartin.png")
+                display_board(player_board, player_board_shoot, bot_board, "Pl9Xy.png", "kartin.png")
                 image = yandex.downloadImageFile('kartin.png')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
@@ -282,7 +282,7 @@ def main():
                 res = shoot(x, y, bot_board, player_board_shoot)
                 if res != 'Попал' and res != 'Уничтожил!':
                     mess = bot_shoot(player_board, bot_board_shoot)
-                    display_board(player_board, player_board_shoot, bot_board, "/Pl9Xy.png", "kartin.png")
+                    display_board(player_board, player_board_shoot, bot_board, "Pl9Xy.png", "kartin.png")
                     image = yandex.downloadImageFile('kartin.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
@@ -304,7 +304,7 @@ def main():
                         response['response']['text'] = 'Поздравляю вы выйграли'
                     elif game_over(player_board):
                         response['response']['text'] = 'Робот победил ((('
-                    display_board(player_board, player_board_shoot, bot_board, "/Pl9Xy.png", "kartin.png")
+                    display_board(player_board, player_board_shoot, bot_board, "Pl9Xy.png", "kartin.png")
                     image = yandex.downloadImageFile('kartin.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
