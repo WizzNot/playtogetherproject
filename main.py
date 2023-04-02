@@ -16,6 +16,7 @@ from seawar import *
 from flask import Flask, request, jsonify
 import json
 import os
+from cairosvg import svg2png
 
 
 app = Flask(__name__)
@@ -341,8 +342,7 @@ def main():
                     board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
                     with open("/tmp/board.svg", "wb") as f:
                         f.write(board_svg)
-                    drawing = svg2rlg('/tmp/board.svg')
-                    renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                    svg2png(url='/tmp/board.svg', write_to='/tmp/board.png')
                     image_path="/tmp/board.png"
                     img = Image.open(image_path)
                     new_image = img.resize((258, 258))
@@ -396,8 +396,7 @@ def main():
                         board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
                         with open("/tmp/board.svg", "wb") as f:
                             f.write(board_svg)
-                        drawing = svg2rlg('/tmp/board.svg')
-                        renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                        svg2png(url='/tmp/board.svg', write_to='/tmp/board.png')
                         image_path="/tmp/board.png"
                         img = Image.open(image_path)
                         new_image = img.resize((258, 258))
@@ -414,8 +413,7 @@ def main():
                         board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
                         with open("/tmp/board.svg", "wb") as f:
                             f.write(board_svg)
-                        drawing = svg2rlg('/tmp/board.svg')
-                        renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                        svg2png(url='/tmp/board.svg', write_to='/tmp/board.png')
                         image_path="/tmp/board.png"
                         img = Image.open(image_path)
                         new_image = img.resize((258, 258))
@@ -446,8 +444,7 @@ def main():
                     board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
                     with open("/tmp/board.svg", "wb") as f:
                         f.write(board_svg)
-                    drawing = svg2rlg('/tmp/board.svg')
-                    renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                    svg2png(url='/tmp/board.svg', write_to='/tmp/board.png')
                     image_path="/tmp/board.png"
                     img = Image.open(image_path)
                     new_image = img.resize((258, 258))
@@ -509,8 +506,7 @@ def main():
                 board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
                 with open("/tmp/board.svg", "wb") as f:
                     f.write(board_svg)
-                drawing = svg2rlg('/tmp/board.svg')
-                renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                svg2png(url='/tmp/board.svg', write_to='/tmp/board.png')
                 image_path="/tmp/board.png"
                 img = Image.open(image_path)
                 new_image = img.resize((258, 258))
