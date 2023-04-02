@@ -189,7 +189,7 @@ def main():
     event = request.json
     yandex = YandexImages()
     yandex.set_auth_token(token = 'y0_AgAAAABVMSWEAAT7owAAAADfiH7Swo8jDnWDRlCVLPMC_o3zj8Pozkg')
-    yandex.skills = '60459c66-a701-463b-8f24-bada3d7cf736'
+    yandex.skills = '65da0d1f-2012-494c-aeb8-1591ddf5d7cf'
     response = {
         "version": event["version"],
         "session": event["session"],
