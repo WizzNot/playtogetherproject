@@ -6,3 +6,4 @@ reportlab
 requests
 Pillow
 flask
+aspose-words

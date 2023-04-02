@@ -14,6 +14,7 @@ from PIL import Image
 from flask import Flask, request, jsonify
 import json
 import os
+import aspose.words as aw
 
 
 app = Flask(__name__)
@@ -242,19 +243,19 @@ def main():
                 board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
                 with open("/tmp/board.svg", "wb") as f:
                     f.write(board_svg)
-                drawing = svg2rlg('/tmp/board.svg')
-                renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                doc = aw.Document()
+                builder = aw.DocumentBuilder(doc)
+                shape = builder.insert_image("/tmp/board.svg")
+                shape.image_data.save("/tmp/board.jpg")
                 image_path="/tmp/board.png"
                 img = Image.open(image_path)
-                new_image = img.resize((172, 172))
-                third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                new_image = img.resize((258, 258))
+                third_image = new_image.crop((-162, 0, 258 + 162, 258))
                 third_image.save('/tmp/answer.png')
                 image = yandex.downloadImageFile('/tmp/answer.png')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
-                response['response']['card']['title'] = "Шахматы"
-                response['response']['card']['description'] = random.choice(["Да начнётся игра!", "Удачной игры!"])
                 response["response"]["text"] = random.choice(["Да начнётся игра!", "Удачной игры!"])
             elif any([i == "случайный" for i in qq.split()]):
                 # games[event['session']['user_id']][1] = "random"
@@ -284,6 +285,7 @@ def main():
                     if sessionStorage[code][0].is_stalemate():
                         response['response']['text'] = "Ничья! Хорошая игра."
                         sessionStorage.pop(code)
+                        response['response']['buttons'] = [{'title': 'профиль', "hide": True}, {'title': 'помощь', "hide": True}, {'title': 'играть', "hide": True}]
                         friendsgames.pop(event['session']['user_id'])
                         return response
                     elif sessionStorage[code][0].is_checkmate():
@@ -291,25 +293,26 @@ def main():
                         games.pop(event['session']['user_id'])
                         sessionStorage.pop(code)
                         friendsgames.pop(event['session']['user_id'])
+                        response['response']['buttons'] = [{'title': 'профиль', "hide": True}, {'title': 'помощь', "hide": True}, {'title': 'играть', "hide": True}]
                         return response
                 if any([i in ("проверить", "проверка") for i in qq.split()]):
                     response['response']['text'] = "противник совершил ход"
                     board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
                     with open("/tmp/board.svg", "wb") as f:
                         f.write(board_svg)
-                    drawing = svg2rlg('/tmp/board.svg')
-                    renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                    doc = aw.Document()
+                    builder = aw.DocumentBuilder(doc)
+                    shape = builder.insert_image("/tmp/board.svg")
+                    shape.image_data.save("/tmp/board.jpg")
                     image_path="/tmp/board.png"
                     img = Image.open(image_path)
-                    new_image = img.resize((172, 172))
-                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                    new_image = img.resize((258, 258))
+                    third_image = new_image.crop((-162, 0, 258 + 162, 258))
                     third_image.save('/tmp/answer.png')
                     image = yandex.downloadImageFile('/tmp/answer.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
-                    response['response']['card']['title'] = "Шахматы"
-                    response['response']['card']['description'] = random.choice(["Ваш ход!", "Противник совершил ход!"])
                     return response
                 qq = rustochess(qq)
                 if qq not in [str(i) for i in sessionStorage[code][0].legal_moves]:
@@ -317,19 +320,19 @@ def main():
                     board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
                     with open("/tmp/board.svg", "wb") as f:
                         f.write(board_svg)
-                    drawing = svg2rlg('/tmp/board.svg')
-                    renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                    doc = aw.Document()
+                    builder = aw.DocumentBuilder(doc)
+                    shape = builder.insert_image("/tmp/board.svg")
+                    shape.image_data.save("/tmp/board.jpg")
                     image_path="/tmp/board.png"
                     img = Image.open(image_path)
-                    new_image = img.resize((172, 172))
-                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                    new_image = img.resize((258, 258))
+                    third_image = new_image.crop((-162, 0, 258 + 162, 258))
                     third_image.save('/tmp/answer.png')
                     image = yandex.downloadImageFile('/tmp/answer.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
-                    response['response']['card']['title'] = "Шахматы"
-                    response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
                     return response
                 sessionStorage[code][0].push_uci(qq)
                 sessionStorage[code][1] = event['session']['user_id']
@@ -337,31 +340,33 @@ def main():
                     if sessionStorage[code][0].is_stalemate():
                         response['response']['text'] = "Ничья! Хорошая игра."
                         friendsgames.pop(event['session']['user_id'])
+                        response['response']['buttons'] = [{'title': 'профиль', "hide": True}, {'title': 'помощь', "hide": True}, {'title': 'играть', "hide": True}]
                         return response
                     elif sessionStorage[code][0].is_checkmate():
                         response['response']['text'] = "Вы победили! Хорошая игра."
                         games.pop(event['session']['user_id'])
                         friendsgames.pop(event['session']['user_id'])
                         profiles[event['session']['user_id']] += 25
+                        response['response']['buttons'] = [{'title': 'профиль', "hide": True}, {'title': 'помощь', "hide": True}, {'title': 'играть', "hide": True}]
                         return response
                 response['response']['text'] = "Ожидайте хода соперника."
                 response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
                 board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
                 with open("/tmp/board.svg", "wb") as f:
                     f.write(board_svg)
-                drawing = svg2rlg('/tmp/board.svg')
-                renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                doc = aw.Document()
+                builder = aw.DocumentBuilder(doc)
+                shape = builder.insert_image("/tmp/board.svg")
+                shape.image_data.save("/tmp/board.jpg")
                 image_path="/tmp/board.png"
                 img = Image.open(image_path)
-                new_image = img.resize((172, 172))
-                third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                new_image = img.resize((258, 258))
+                third_image = new_image.crop((-162, 0, 258 + 162, 258))
                 third_image.save('/tmp/answer.png')
                 image = yandex.downloadImageFile('/tmp/answer.png')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
-                response['response']['card']['title'] = "Шахматы"
-                response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
         elif games[event['session']['user_id']][1] == 'friendchoice':
             response['response']['buttons'] = [{'title': "Присоединиться", 'hide': True}]
             if any([i in ('зайти', "присоединиться", "найти") for i in qq.split()]):
@@ -386,43 +391,47 @@ def main():
             if sessionStorage[event['session']['user_id']].is_stalemate():
                 response['response']['text'] = "Ничья! Хорошая игра."
                 games.pop(event['session']['user_id'])
+                response['response']['buttons'] = [{'title': 'профиль', "hide": True}, {'title': 'помощь', "hide": True}, {'title': 'играть', "hide": True}]
                 sessionStorage.pop(event['session']['user_id'])
                 return response
             elif sessionStorage[event['session']['user_id']].is_checkmate():
                 response['response']['text'] = "Победа! Хорошая игра."
                 profiles[event['session']['user_id']] += 25
                 games.pop(event['session']['user_id'])
+                response['response']['buttons'] = [{'title': 'профиль', "hide": True}, {'title': 'помощь', "hide": True}, {'title': 'играть', "hide": True}]
                 sessionStorage.pop(event['session']['user_id'])
                 return response
             sessionStorage[event['session']['user_id']].push_uci(lst[0])
             if sessionStorage[event['session']['user_id']].is_stalemate():
                 response['response']['text'] = "Ничья! Хорошая игра."
                 games.pop(event['session']['user_id'])
+                response['response']['buttons'] = [{'title': 'профиль', "hide": True}, {'title': 'помощь', "hide": True}, {'title': 'играть', "hide": True}]
                 sessionStorage.pop(event['session']['user_id'])
                 return response
             elif sessionStorage[event['session']['user_id']].is_checkmate():
                 response['response']['text'] = "Вы проиграли! Попробуйте ещё раз."
                 games.pop(event['session']['user_id'])
                 sessionStorage.pop(event['session']['user_id'])
+                response['response']['buttons'] = [{'title': 'профиль', "hide": True}, {'title': 'помощь', "hide": True}, {'title': 'играть', "hide": True}]
                 return response
             aiboards[event['session']['user_id']] = lst[1]
             response["response"]["text"] = "Противник сходил " + lst[0] + ". Ваш ход"
             board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
             with open("/tmp/board.svg", "wb") as f:
                 f.write(board_svg)
-            drawing = svg2rlg('/tmp/board.svg')
-            renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+            doc = aw.Document()
+            builder = aw.DocumentBuilder(doc)
+            shape = builder.insert_image("/tmp/board.svg")
+            shape.image_data.save("/tmp/board.jpg")
             image_path="/tmp/board.png"
             img = Image.open(image_path)
-            new_image = img.resize((172, 172))
-            third_image = new_image.crop((-108, 0, 172 + 108, 172))
+            new_image = img.resize((258, 258))
+            third_image = new_image.crop((-162, 0, 258 + 162, 258))
             third_image.save('/tmp/answer.png')
             image = yandex.downloadImageFile('/tmp/answer.png')
             response['response']['card'] = {}
             response['response']['card']['image_id'] = image["id"]
             response['response']['card']['type'] = "BigImage"
-            response['response']['card']['title'] = "Шахматы"
-            response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
             # response["response"]["text"] = printchessboard(str(sessionStorage[event['session']['user_id']]))
         else:
             response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то другое"
