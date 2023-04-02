@@ -227,7 +227,7 @@ def main():
         response['response']['buttons'] = [{"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         return response
     elif any([i == "уметь" for i in qq.split()]):
-        otv = random.choice(["Я умею играть (морской бой и шахматы), вы можете посоревноваться со мной. Так же вы можете поиграть со своим другом. Вы можете поднимать свой рейтинг", "В данном навыке вы можете поиграть в различные игры. Играть вы можете как против меня, так и против друга. За победы вам добавляется рейтинг"])
+        otv = random.choice(["Я умею играть (морской бой и шахматы), вы можете посоревноваться со мной. Так же вы можете поиграть со своим человеком. Вы можете поднимать свой рейтинг", "В данном навыке вы можете поиграть в различные игры. Играть вы можете как против меня, так и против человека. За победы вам добавляется рейтинг"])
         response["response"]["text"] = otv
         response['response']['buttons'] = [{"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         return response
@@ -264,13 +264,14 @@ def main():
                 bot_board_shoot = generate_white_board()
                 player_board_shoot = generate_white_board()
                 bot_memory = []
-                display_board(player_board, player_board_shoot, bot_board, "Pl9Xy.png", "kartin.png")
+                display_board(player_board, player_board_shoot, bot_board, "/Pl9Xy.png", "kartin.png")
                 image = yandex.downloadImageFile('kartin.png')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
                 response['response']['card']['title'] = "Морской Бой"
-                response['response']['text'] = "Ваше поле"
+                response['response']['card']['description'] = random.choice(["Да начнётся игра!", "Удачной игры!", "Ваше поле"])
+                response['response']['text'] = response['response']['card']['description']
                 sessionStorage[event['session']['user_id']] = [player_board, player_board_shoot]
                 aiboards[event['session']['user_id']] = [bot_board, bot_board_shoot, bot_memory, near_list, all_near_list]
             elif games[event['session']['user_id']][1] == "ai":
@@ -289,45 +290,41 @@ def main():
                 res = shoot(x, y, bot_board, player_board_shoot)
                 if res != 'Попал' and res != 'Уничтожил!':
                     mess = bot_shoot(player_board, bot_board_shoot)
-                    display_board(player_board, player_board_shoot, bot_board, "Pl9Xy.png", "kartin.png")
+                    display_board(player_board, player_board_shoot, bot_board, "/Pl9Xy.png", "kartin.png")
                     image = yandex.downloadImageFile('kartin.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
-                    response['response']['card']['title'] = "Морской Бой"
                     print(mess)
                     if mess[-1] == 'Мимо':
-                       response['response']['text'] = random.choice(["Не в этот раз(как и для бота)", "Не попал(", "Не повезло - не повезло", "С кем не бывает!", "компьютер тоже промахнулся", ])
+                       response['response']['card']['description'] = random.choice(["Не в этот раз(как и для бота)", "Не попал(", "Не повезло - не повезло", "С кем не бывает!", "компьютер тоже промахнулся", "компьютер"])
+                       response['response']['text'] = response['response']['card']['description']
                     elif mess[-1] == 'Попал':    
-                        response['response']['text'] = random.choice(["Не в этот раз, а для бота именно в этот)", "Не попал(", "Не повезло - не повезло", "С кем не бывает!", "компьютер тоже промахнулся(нет)"])
+                        response['response']['card']['description'] = random.choice(["Не в этот раз, а для бота именно в этот)", "Не попал(", "Не повезло - не повезло", "С кем не бывает!", "компьютер тоже промахнулся(нет)"])
+                        response['response']['text'] = response['response']['card']['description']
                     elif mess[-1] == 'Уничтожил!' and 'Уничтожил!' in mess[0:len(mess)-1]:
-                        response['response']['text'] = random.choice(["Уничтожил!", "Твои корабали были потоплены(", "кажись минус караблики", "С кем не бывает! потерял - так потерял"])
+                        response['response']['card']['description'] = random.choice(["Уничтожил!", "Твои корабали были потоплены(", "кажись минус караблики", "С кем не бывает! потерял - так потерял"])
+                        response['response']['text'] = response['response']['card']['description']
                     elif mess[-1] == 'Уничтожил!':
-                        response['response']['text'] = random.choice(["Уничтожил!", "Твой корабаль был потоплен(", "кажись минус караблик", "С кем не бывает! потерял - так потерял"])
+                        response['response']['card']['description'] = random.choice(["Уничтожил!", "Твой корабаль был потоплен(", "кажись минус караблик", "С кем не бывает! потерял - так потерял"])
+                        response['response']['text'] = response['response']['card']['description']
                 else:
-                    if game_over(bot_board) and game_over(player_board):
-                        response['response']['text'] = 'Ничья'
-                    elif game_over(bot_board):
-                        response['response']['text'] = 'Поздравляю вы выйграли'
-                    elif game_over(player_board):
-                        response['response']['text'] = 'Робот победил ((('
-                    display_board(player_board, player_board_shoot, bot_board, "Pl9Xy.png", "kartin.png")
+                    display_board(player_board, player_board_shoot, bot_board, "/Pl9Xy.png", "kartin.png")
                     image = yandex.downloadImageFile('kartin.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
-                    response['response']['card']['title'] = "Морской Бой"
                     response['response']['card']['description'] = random.choice(["ЙОУ, а ты снайпер", "Есть пробитие!", "Попадание!", "Да ты на лаки просто *_*"]) + " " + random.choice(["дерзай еще!", "но получится ли попасть в следующий раз?", "ходи следующим", "Твой ход следующий"])
                     response['response']['text'] = response['response']['card']['description']
-                if game_over(bot_board) and game_over(player_board): 
-                    response['response']['text'] = random.choice(["как же так... ничья", "НИЧЬЯ!", "ни кто не выйграл, но ни кто не проиграл", "ты проиграл... как и противник"])
-                elif game_over(bot_board):
-                    response['response']['text'] = random.choice(["ТЫ ВЫЙГРАЛ!", "ПОБЕДА", "ВИКТОРИИ", "Да ты на лаки просто *_*"])
-                elif game_over(player_board):
-                    response['response']['text'] = random.choice(["ТЫ ПРОИГРАЛ! УРАА", "ну проиграл и проиграл", "ПОРАЖАНИЕ!!!", "Нуб", "да лан"])
+                    if game_over(bot_board) and game_over(player_board):
+                        response['response']['text'] = random.choice(["как же так... ничья", "НИЧЬЯ!", "ни кто не выйграл, но ни кто не проиграл", "ты проиграл... как и противник"])
+                    elif game_over(bot_board):
+                        response['response']['text'] = random.choice(["ТЫ ВЫЙГРАЛ!", "ПОБЕДА", "ВИКТОРИИ", "Да ты на лаки просто *_*"])
+                    elif game_over(player_board):
+                        response['response']['text'] = random.choice(["ТЫ ПРОИГРАЛ! УРАА", "ну проиграл и проиграл", "ПОРАЖАНИЕ!!!", "Нуб", "да лан"])
         elif games[event['session']['user_id']][0] == 'chess':
             if games[event['session']['user_id']][1] == "none":
-                if any([i == "друг" for i in qq.split()]):
+                if any([i == "человек" for i in qq.split()]):
                     games[event['session']['user_id']][1] = "friendchoice"
                     response["response"]["text"] = "Создать комнату или присоединиться? Если хотите создать, то введите код комнаты."
                     cd = str(random.randint(100, 999))
@@ -356,10 +353,10 @@ def main():
                 elif any([i == "случайный" for i in qq.split()]):
                     # games[event['session']['user_id']][1] = "random"
                     response['response']['text'] = 'Эта ветка навыка ещё не закончена! Совсем скоро вы сможете поиграть с человеком'
-                    response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
+                    response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
                 else:
-                    response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то другое"
-                    response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
+                    response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то человекое"
+                    response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
             elif games[event['session']['user_id']][1] == 'friendconnect':
                 if all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
                     code = "".join([str(wordtonum[i]) if i in wordtonum else i for i in qq.split()])
@@ -368,7 +365,7 @@ def main():
                         games[event['session']['user_id']][1] = "friendgame"
                         response['response']['text'] = "Игра началась! Сделайте ход."
                     else:
-                        response['response']['text'] = "Такой комнаты нет! Убедитесь, что ваш друг её создал и перепроверьте код. " + code + " коды которые есть: " + " ".join(list(sessionStorage.keys()))
+                        response['response']['text'] = "Такой комнаты нет! Убедитесь, что ваш человек её создал и перепроверьте код. " + code + " коды которые есть: " + " ".join(list(sessionStorage.keys()))
                 else:
                     response['response']['text'] = "Некорректно введён код! Вводите код без лишних слов."
             elif games[event['session']['user_id']][1] == 'friendgame':
@@ -458,16 +455,16 @@ def main():
                 response['response']['buttons'] = [{'title': "Присоединиться", 'hide': True}]
                 if any([i in ('зайти', "присоединиться", "найти") for i in qq.split()]):
                     games[event['session']['user_id']][1] = 'friendconnect'
-                    response['response']['text'] = "Введите код комнаты. Спросите его у друга, который создал комнату"
+                    response['response']['text'] = "Введите код комнаты. Спросите его у человека, который создал комнату"
                 elif all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
                     code = "".join([str(wordtonum[i]) if i in wordtonum else i for i in qq.split()])
                     if code in sessionStorage:
-                        response['response']['text'] = "Такой код уже есть в списке игр! Придумайте другой."
+                        response['response']['text'] = "Такой код уже есть в списке игр! Придумайте человекой."
                         return response
                     games[event['session']['user_id']][1] = 'friendgame'
                     friendsgames[event['session']['user_id']] = code
                     sessionStorage[code] = [chess.Board(), event['session']['user_id']]
-                    response['response']['text'] = "Комната создана! Скажите другу зайти по вашему коду и сделать ход. " + code
+                    response['response']['text'] = "Комната создана! Скажите человеку зайти по вашему коду и сделать ход. " + code
             elif games[event['session']['user_id']][0] == 'chess' and games[event['session']['user_id']][1] == 'ai':
                 qq = rustochess(qq)
                 if qq not in [str(i) for i in sessionStorage[event['session']['user_id']].legal_moves]:
@@ -518,11 +515,11 @@ def main():
                 response['response']['card']['type'] = "BigImage"
                 # response["response"]["text"] = printchessboard(str(sessionStorage[event['session']['user_id']]))
             else:
-                response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то другое"
-                response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
+                response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то человекое"
+                response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}]
     else:
         if any([i in ("помощь", "что ты уметь", "подсказать") for i in qq.split()]):
-            otv = random.choice(["Вы можете начать игру с другом, компьютером, или случайным человеком. Либо вы можете посмотреть свой рейтинг по команде профиль", "В данном навыке вы можете играть в шахматы с другом, компьютером, или случайным человеком. Также вы можете зайти в свой профиль и увидеть статистику", "Я умею запускать с другом, компьютером, или случайным человеком. Либо показать ваш рейтинг по команде профиль"])
+            otv = random.choice(["Вы можете начать игру с человеком, компьютером. Либо вы можете посмотреть свой рейтинг по команде профиль", "В данном навыке вы можете играть в шахматы с человеком, компьютером. Также вы можете зайти в свой профиль и увидеть статистику", "Я умею запускать с человеком, компьютером, или случайным человеком. Либо показать ваш рейтинг по команде профиль"])
             response["response"]["text"] = otv
             response['response']['buttons'] = [{"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         elif any([i in ("профиль", "статистика", "рейтинг") for i in qq.split()]):
@@ -542,18 +539,18 @@ def main():
             response['response']['card']['image_id'] = '213044/25964e6c4a27e7818633'
             response['response']['card']['type'] = "BigImage"
             response['response']['card']['title'] = "Шахматы"
-            response['response']['card']['description'] = random.choice(["Выберите соперника: друг, компьютер, или случайный игрок", "C кем хотите играть? С другом, компьютером, или случайным игроком"])
-            response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
-            response['response']['text'] = "Выберите соперника: друг, компьютер, или случайный игрок"
+            response['response']['card']['description'] = random.choice(["Выберите соперника: человек, компьютер", "C кем хотите играть? С человеком или компьютером"])
+            response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
+            response['response']['text'] = "Выберите соперника: человек, компьютер, или случайный игрок"
         elif any([i == "морской" for i in qq.split()]):
             games[event['session']['user_id']] = ["SeaWar", "none"]
             response['response']['card'] = {}
             response['response']['card']['image_id'] = '937455/232c2094012519c12d13'
             response['response']['card']['type'] = "BigImage"
             response['response']['card']['title'] = "Морской Бой"
-            response['response']['card']['description'] = random.choice(["Выберите соперника: друг, компьютер, или случайный игрок", "C кем хотите играть? С другом, компьютером, или случайным игроком"])
-            response['response']['buttons'] = [{'title': "Друг", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
-            response['response']['text'] = "Выберите соперника: друг, компьютер, или случайный игрок"
+            response['response']['card']['description'] = random.choice(["Выберите соперника: человек, компьютер, или случайный игрок", "C кем хотите играть? С человеком, компьютером, или случайным игроком"])
+            response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
+            response['response']['text'] = "Выберите соперника: человек, компьютер, или случайный игрок"
         elif any([i in ('выход', 'завершить', 'выйти') for i in qq.split()]):
             response['response']['text'] = "Буду ждать вас снова!"
             response['response']["end_session"] = True
