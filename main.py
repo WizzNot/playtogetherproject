@@ -353,10 +353,10 @@ def main():
                 elif any([i == "случайный" for i in qq.split()]):
                     # games[event['session']['user_id']][1] = "random"
                     response['response']['text'] = 'Эта ветка навыка ещё не закончена! Совсем скоро вы сможете поиграть с человеком'
-                    response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
+                    response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}]
                 else:
                     response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то человекое"
-                    response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
+                    response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}]
             elif games[event['session']['user_id']][1] == 'friendconnect':
                 if all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
                     code = "".join([str(wordtonum[i]) if i in wordtonum else i for i in qq.split()])
@@ -540,17 +540,17 @@ def main():
             response['response']['card']['type'] = "BigImage"
             response['response']['card']['title'] = "Шахматы"
             response['response']['card']['description'] = random.choice(["Выберите соперника: человек, компьютер", "C кем хотите играть? С человеком или компьютером"])
-            response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
-            response['response']['text'] = "Выберите соперника: человек, компьютер, или случайный игрок"
+            response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}]
+            response['response']['text'] = "Выберите соперника: человек, компьютер"
         elif any([i == "морской" for i in qq.split()]):
             games[event['session']['user_id']] = ["SeaWar", "none"]
             response['response']['card'] = {}
             response['response']['card']['image_id'] = '937455/232c2094012519c12d13'
             response['response']['card']['type'] = "BigImage"
             response['response']['card']['title'] = "Морской Бой"
-            response['response']['card']['description'] = random.choice(["Выберите соперника: человек, компьютер, или случайный игрок", "C кем хотите играть? С человеком, компьютером, или случайным игроком"])
-            response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}, {'title': "Случайный игрок", 'hide': True}]
-            response['response']['text'] = "Выберите соперника: человек, компьютер, или случайный игрок"
+            response['response']['card']['description'] = random.choice(["Выберите соперника: человек, компьютер", "C кем хотите играть? С человеком, компьютером"])
+            response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}]
+            response['response']['text'] = "Выберите соперника: человек, компьютер"
         elif any([i in ('выход', 'завершить', 'выйти') for i in qq.split()]):
             response['response']['text'] = "Буду ждать вас снова!"
             response['response']["end_session"] = True
