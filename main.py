@@ -220,8 +220,13 @@ def main():
     }
     morph = pymorphy2.MorphAnalyzer()
     qq = " ".join([morph.parse(i)[0].normal_form for i in event['request']['original_utterance'].lower().rstrip(".").split()])
-    if any([i in ("помощь", "что ты уметь", "подсказать") for i in qq.split()]):
-        otv = random.choice(["Вы можете начать игру с другом, компьютером, или случайным человеком. Либо вы можете посмотреть свой рейтинг по команде профиль", "В данном навыке вы можете играть в шахматы с другом, компьютером, или случайным человеком. Также вы можете зайти в свой профиль и увидеть статистику", "Я умею запускать с другом, компьютером, или случайным человеком. Либо показать ваш рейтинг по команде профиль"])
+    if any([i in ("помощь", "подсказать", "помоги", "помогать") for i in qq.split()]):
+        otv = random.choice(["Вы можете вывести список игр по команде играть, далее выбрать нужную игру и соперника, после чего начнется игра. Либо вы можете посмотреть свой рейтинг по команде профиль", "Вы можете вывести список игр по команде играть, посмотреть свой профиль по команде профиль, начать игру по названию желаемой игры."])
+        response["response"]["text"] = otv
+        response['response']['buttons'] = [{"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
+        return response
+    elif any([i == "уметь" for i in qq.split()]):
+        otv = random.choice(["Я умею играть (морской бой и шахматы), вы можете посоревноваться со мной. Так же вы можете поиграть со своим другом. Вы можете поднимать свой рейтинг", "В данном навыке вы можете поиграть в различные игры. Играть вы можете как против меня, так и против друга. За победы вам добавляется рейтинг"])
         response["response"]["text"] = otv
         response['response']['buttons'] = [{"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         return response
@@ -239,7 +244,7 @@ def main():
         return response
     if event['session']['new']:
         response["response"]["text"] = "Приветствую в навыке 'Играй вместе'. Вы можете попросить помощь, посмотреть свой рейтинг, либо начать играть."
-        response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
+        response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}, {"title": "что ты умеешь", "hide": True}]
         if event['session']['user_id'] not in profiles:
             profiles[event['session']['user_id']] = 0
     elif event['session']['user_id'] in games:
@@ -264,6 +269,7 @@ def main():
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
                 response['response']['card']['title'] = "Морской Бой"
+                response['response']['text'] = "Ваше поле"
                 sessionStorage[event['session']['user_id']] = [player_board, player_board_shoot]
                 aiboards[event['session']['user_id']] = [bot_board, bot_board_shoot, bot_memory, near_list, all_near_list]
             elif games[event['session']['user_id']][1] == "ai":
