@@ -258,6 +258,12 @@ def main():
                 bot_board_shoot = generate_white_board()
                 player_board_shoot = generate_white_board()
                 bot_memory = []
+                display_board(player_board, player_board_shoot, bot_board, "/Pl9Xy.png", "kartin.png")
+                image = yandex.downloadImageFile('kartin.png')
+                response['response']['card'] = {}
+                response['response']['card']['image_id'] = image["id"]
+                response['response']['card']['type'] = "BigImage"
+                response['response']['card']['title'] = "Морской Бой"
                 sessionStorage[event['session']['user_id']] = [player_board, player_board_shoot]
                 aiboards[event['session']['user_id']] = [bot_board, bot_board_shoot, bot_memory, near_list, all_near_list]
             elif games[event['session']['user_id']][1] == "ai":
@@ -276,8 +282,10 @@ def main():
                 res = shoot(x, y, bot_board, player_board_shoot)
                 if res != 'Попал' and res != 'Уничтожил!':
                     mess = bot_shoot(player_board, bot_board_shoot)
+                    display_board(player_board, player_board_shoot, bot_board, "/Pl9Xy.png", "kartin.png")
+                    image = yandex.downloadImageFile('kartin.png')
                     response['response']['card'] = {}
-                    response['response']['card']['image_id'] = '937455/232c2094012519c12d13'
+                    response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
                     response['response']['card']['title'] = "Морской Бой"
                     print(mess)
@@ -290,8 +298,16 @@ def main():
                     elif mess[-1] == 'Уничтожил!':
                         response['response']['text'] = random.choice(["Уничтожил!", "Твой корабаль был потоплен(", "кажись минус караблик", "С кем не бывает! потерял - так потерял"])
                 else:
+                    if game_over(bot_board) and game_over(player_board):
+                        response['response']['text'] = 'Ничья'
+                    elif game_over(bot_board):
+                        response['response']['text'] = 'Поздравляю вы выйграли'
+                    elif game_over(player_board):
+                        response['response']['text'] = 'Робот победил ((('
+                    display_board(player_board, player_board_shoot, bot_board, "/Pl9Xy.png", "kartin.png")
+                    image = yandex.downloadImageFile('kartin.png')
                     response['response']['card'] = {}
-                    response['response']['card']['image_id'] = '937455/232c2094012519c12d13'
+                    response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
                     response['response']['card']['title'] = "Морской Бой"
                     response['response']['card']['description'] = random.choice(["ЙОУ, а ты снайпер", "Есть пробитие!", "Попадание!", "Да ты на лаки просто *_*"]) + " " + random.choice(["дерзай еще!", "но получится ли попасть в следующий раз?", "ходи следующим", "Твой ход следующий"])
