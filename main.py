@@ -14,7 +14,6 @@ from PIL import Image
 from flask import Flask, request, jsonify
 import json
 import os
-import aspose.words as aw
 
 
 app = Flask(__name__)
@@ -189,7 +188,7 @@ def main():
     event = request.json
     yandex = YandexImages()
     yandex.set_auth_token(token = 'y0_AgAAAABVMSWEAAT7owAAAADfiH7Swo8jDnWDRlCVLPMC_o3zj8Pozkg')
-    yandex.skills = '65da0d1f-2012-494c-aeb8-1591ddf5d7cf'
+    yandex.skills = '60459c66-a701-463b-8f24-bada3d7cf736'
     response = {
         "version": event["version"],
         "session": event["session"],
@@ -241,21 +240,21 @@ def main():
                 sessionStorage[event['session']['user_id']] = chess.Board()
                 aiboards[event['session']['user_id']] = bd.new()
                 board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
-                with open("/board.svg", "wb") as f:
+                with open("/tmp/board.svg", "wb") as f:
                     f.write(board_svg)
-                doc = aw.Document()
-                builder = aw.DocumentBuilder(doc)
-                shape = builder.insert_image("/board.svg")
-                shape.image_data.save("/board.png")
-                image_path="/board.png"
+                drawing = svg2rlg('/tmp/board.svg')
+                renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                image_path="/tmp/board.png"
                 img = Image.open(image_path)
-                new_image = img.resize((258, 258))
-                third_image = new_image.crop((-162, 0, 258 + 162, 258))
-                third_image.save('/answer.png')
-                image = yandex.downloadImageFile('/answer.png')
+                new_image = img.resize((172, 172))
+                third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                third_image.save('/tmp/answer.png')
+                image = yandex.downloadImageFile('/tmp/answer.png')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
+                response['response']['card']['title'] = "Шахматы"
+                response['response']['card']['description'] = random.choice(["Да начнётся игра!", "Удачной игры!"])
                 response["response"]["text"] = random.choice(["Да начнётся игра!", "Удачной игры!"])
             elif any([i == "случайный" for i in qq.split()]):
                 # games[event['session']['user_id']][1] = "random"
@@ -298,41 +297,41 @@ def main():
                 if any([i in ("проверить", "проверка") for i in qq.split()]):
                     response['response']['text'] = "противник совершил ход"
                     board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
-                    with open("/board.svg", "wb") as f:
+                    with open("/tmp/board.svg", "wb") as f:
                         f.write(board_svg)
-                    doc = aw.Document()
-                    builder = aw.DocumentBuilder(doc)
-                    shape = builder.insert_image("/board.svg")
-                    shape.image_data.save("/board.png")
-                    image_path="/board.png"
+                    drawing = svg2rlg('/tmp/board.svg')
+                    renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                    image_path="/tmp/board.png"
                     img = Image.open(image_path)
-                    new_image = img.resize((258, 258))
-                    third_image = new_image.crop((-162, 0, 258 + 162, 258))
-                    third_image.save('/answer.png')
-                    image = yandex.downloadImageFile('/answer.png')
+                    new_image = img.resize((172, 172))
+                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                    third_image.save('/tmp/answer.png')
+                    image = yandex.downloadImageFile('/tmp/answer.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
+                    response['response']['card']['title'] = "Шахматы"
+                    response['response']['card']['description'] = random.choice(["Ваш ход!", "Противник совершил ход!"])
                     return response
                 qq = rustochess(qq)
                 if qq not in [str(i) for i in sessionStorage[code][0].legal_moves]:
                     response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А 2 на А4, либо вводите a2a4", "Неправильно! Вводите в формате b2b4, либо говорите Б 2 на Б 4"])
                     board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
-                    with open("/board.svg", "wb") as f:
+                    with open("/tmp/board.svg", "wb") as f:
                         f.write(board_svg)
-                    doc = aw.Document()
-                    builder = aw.DocumentBuilder(doc)
-                    shape = builder.insert_image("/board.svg")
-                    shape.image_data.save("/board.png")
-                    image_path="/board.png"
+                    drawing = svg2rlg('/tmp/board.svg')
+                    renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                    image_path="/tmp/board.png"
                     img = Image.open(image_path)
-                    new_image = img.resize((258, 258))
-                    third_image = new_image.crop((-162, 0, 258 + 162, 258))
-                    third_image.save('/answer.png')
-                    image = yandex.downloadImageFile('/answer.png')
+                    new_image = img.resize((172, 172))
+                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                    third_image.save('/tmp/answer.png')
+                    image = yandex.downloadImageFile('/tmp/answer.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
+                    response['response']['card']['title'] = "Шахматы"
+                    response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
                     return response
                 sessionStorage[code][0].push_uci(qq)
                 sessionStorage[code][1] = event['session']['user_id']
@@ -352,21 +351,21 @@ def main():
                 response['response']['text'] = "Ожидайте хода соперника."
                 response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
                 board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
-                with open("/board.svg", "wb") as f:
+                with open("/tmp/board.svg", "wb") as f:
                     f.write(board_svg)
-                doc = aw.Document()
-                builder = aw.DocumentBuilder(doc)
-                shape = builder.insert_image("/board.svg")
-                shape.image_data.save("/board.png")
-                image_path="/board.png"
+                drawing = svg2rlg('/tmp/board.svg')
+                renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                image_path="/tmp/board.png"
                 img = Image.open(image_path)
-                new_image = img.resize((258, 258))
-                third_image = new_image.crop((-162, 0, 258 + 162, 258))
-                third_image.save('/answer.png')
-                image = yandex.downloadImageFile('/answer.png')
+                new_image = img.resize((172, 172))
+                third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                third_image.save('/tmp/answer.png')
+                image = yandex.downloadImageFile('/tmp/answer.png')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
+                response['response']['card']['title'] = "Шахматы"
+                response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
         elif games[event['session']['user_id']][1] == 'friendchoice':
             response['response']['buttons'] = [{'title': "Присоединиться", 'hide': True}]
             if any([i in ('зайти', "присоединиться", "найти") for i in qq.split()]):
@@ -417,21 +416,21 @@ def main():
             aiboards[event['session']['user_id']] = lst[1]
             response["response"]["text"] = "Противник сходил " + lst[0] + ". Ваш ход"
             board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
-            with open("/board.svg", "wb") as f:
+            with open("/tmp/board.svg", "wb") as f:
                 f.write(board_svg)
-            doc = aw.Document()
-            builder = aw.DocumentBuilder(doc)
-            shape = builder.insert_image("/board.svg")
-            shape.image_data.save("/board.png")
-            image_path="/board.png"
+            drawing = svg2rlg('/tmp/board.svg')
+            renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+            image_path="/tmp/board.png"
             img = Image.open(image_path)
-            new_image = img.resize((258, 258))
-            third_image = new_image.crop((-162, 0, 258 + 162, 258))
-            third_image.save('/answer.png')
-            image = yandex.downloadImageFile('/answer.png')
+            new_image = img.resize((172, 172))
+            third_image = new_image.crop((-108, 0, 172 + 108, 172))
+            third_image.save('/tmp/answer.png')
+            image = yandex.downloadImageFile('/tmp/answer.png')
             response['response']['card'] = {}
             response['response']['card']['image_id'] = image["id"]
             response['response']['card']['type'] = "BigImage"
+            response['response']['card']['title'] = "Шахматы"
+            response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
             # response["response"]["text"] = printchessboard(str(sessionStorage[event['session']['user_id']]))
         else:
             response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то другое"
