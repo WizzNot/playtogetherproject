@@ -248,12 +248,11 @@ def main():
                 shape = builder.insert_image("/tmp/board.svg")
                 shape.image_data.save("/tmp/board.jpg")
                 image_path="/tmp/board.jpg"
-                with open(image_path, "rb") as f:
-                    img = Image(f)
-                new_image = img.resize((172, 172))
-                third_image = new_image.crop((-108, 0, 172 + 108, 172))
-                third_image.save('/tmp/answer.png')
-                image = yandex.downloadImageFile('/tmp/answer.png')
+                with Image.open(image_path, "rb") as img:
+                    new_image = img.resize((172, 172))
+                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                    third_image.save('/tmp/answer.jpg')
+                image = yandex.downloadImageFile('/tmp/answer.jpg')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
@@ -427,11 +426,10 @@ def main():
             shape = builder.insert_image("/tmp/board.svg")
             shape.image_data.save("/tmp/board.jpg")
             image_path="/tmp/board.jpg"
-            with open(image_path, "rb") as f:
-                img = Image(f)
-            new_image = img.resize((172, 172))
-            third_image = new_image.crop((-108, 0, 172 + 108, 172))
-            third_image.save('/tmp/answer.jpg')
+            with Image.open(image_path, "rb") as img:
+                new_image = img.resize((172, 172))
+                third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                third_image.save('/tmp/answer.jpg')
             image = yandex.downloadImageFile('/tmp/answer.jpg')
             response['response']['card'] = {}
             response['response']['card']['image_id'] = image["id"]
