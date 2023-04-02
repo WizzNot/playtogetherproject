@@ -248,7 +248,7 @@ def main():
                 shape = builder.insert_image("/tmp/board.svg")
                 shape.image_data.save("/tmp/board.jpg")
                 image_path="/tmp/board.jpg"
-                with Image.open(image_path, "rb") as img:
+                with Image.open(image_path) as img:
                     new_image = img.resize((172, 172))
                     third_image = new_image.crop((-108, 0, 172 + 108, 172))
                     third_image.save('/tmp/answer.jpg')
