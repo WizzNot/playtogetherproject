@@ -14,6 +14,8 @@ from PIL import Image
 from flask import Flask, request, jsonify
 import json
 import os
+import cairo
+import rsvg
 
 
 app = Flask(__name__)
@@ -242,8 +244,11 @@ def main():
                 board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
                 with open("/tmp/board.svg", "wb") as f:
                     f.write(board_svg)
-                drawing = svg2rlg('/tmp/board.svg')
-                renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                img = cairu.ImageSurface(cairo.FORMAT_ATGB32, 293, 293)
+                ctx = cairo.Context(img)
+                handle = rsvg.Handle('/tmp/board.svg')
+                handle.render_cairo(ctx)
+                img.write_to_png("/tmp/board.png")
                 image_path="/tmp/board.png"
                 img = Image.open(image_path)
                 new_image = img.resize((172, 172))
