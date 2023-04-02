@@ -207,6 +207,10 @@ def main():
     elif qq == 'чистка':
         if event['session']['user_id'] in games:
             games.pop(event['session']['user_id'])
+            if event['session']['user_id'] in friendsgames:
+                if friendsgames[event['session']['user_id']] in sessionStorage:
+                    sessionStorage.pop(friendsgames[event['session']['user_id']])
+                friendsgames.pop(friendsgames[event['session']['user_id']])
             response["response"]["text"] = "Ваш id был удалён"
         else:
             response["response"]["text"] = "Вашего id итак нет в базе данных"
@@ -276,17 +280,18 @@ def main():
                 response['response']['text'] = "Ваш противник ещё не сходил! Ожидайте."
                 response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
             else:
-                if sessionStorage[code][0].is_stalemate():
-                    response['response']['text'] = "Ничья! Хорошая игра."
-                    sessionStorage.pop(code)
-                    friendsgames.pop(event['session']['user_id'])
-                    return response
-                elif sessionStorage[code][0].is_checkmate():
-                    response['response']['text'] = "Вы проиграли! Попробуйте ещё раз."
-                    games.pop(event['session']['user_id'])
-                    sessionStorage.pop(code)
-                    friendsgames.pop(event['session']['user_id'])
-                    return response
+                if len(list(sessionStorage[code][0].legal_moves)) == 0:
+                    if sessionStorage[code][0].is_stalemate():
+                        response['response']['text'] = "Ничья! Хорошая игра."
+                        sessionStorage.pop(code)
+                        friendsgames.pop(event['session']['user_id'])
+                        return response
+                    elif sessionStorage[code][0].is_checkmate():
+                        response['response']['text'] = "Вы проиграли! Попробуйте ещё раз."
+                        games.pop(event['session']['user_id'])
+                        sessionStorage.pop(code)
+                        friendsgames.pop(event['session']['user_id'])
+                        return response
                 if any([i in ("проверить", "проверка") for i in qq.split()]):
                     response['response']['text'] = "противник совершил ход"
                     board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
@@ -328,17 +333,19 @@ def main():
                     return response
                 sessionStorage[code][0].push_uci(qq)
                 sessionStorage[code][1] = event['session']['user_id']
-                if sessionStorage[code][0].is_stalemate():
-                    response['response']['text'] = "Ничья! Хорошая игра."
-                    games.pop(event['session']['user_id'])
-                    sessionStorage.pop(code)
-                    return response
-                elif sessionStorage[code][0].is_checkmate():
-                    response['response']['text'] = "Вы победили! Хорошая игра."
-                    games.pop(event['session']['user_id'])
-                    aiboards.pop(event['session']['user_id'])
-                    sessionStorage.pop(code)
-                    return response
+                if len(list(sessionStorage[code][0].legal_moves)) == 0:
+                    if sessionStorage[code][0].is_stalemate():
+                        response['response']['text'] = "Ничья! Хорошая игра."
+                        sessionStorage.pop(code)
+                        friendsgames.pop(event['session']['user_id'])
+                        return response
+                    elif sessionStorage[code][0].is_checkmate():
+                        response['response']['text'] = "Вы победили! Хорошая игра."
+                        games.pop(event['session']['user_id'])
+                        sessionStorage.pop(code)
+                        friendsgames.pop(event['session']['user_id'])
+                        profiles[event['session']['user_id']] += 25
+                        return response
                 response['response']['text'] = "Ожидайте хода соперника."
                 response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
                 board_svg = chess.svg.board(board=sessionStorage[code][0]).encode('utf-8')
@@ -385,6 +392,7 @@ def main():
                 return response
             elif sessionStorage[event['session']['user_id']].is_checkmate():
                 response['response']['text'] = "Победа! Хорошая игра."
+                profiles[event['session']['user_id']] += 25
                 games.pop(event['session']['user_id'])
                 sessionStorage.pop(event['session']['user_id'])
                 return response
@@ -437,7 +445,6 @@ def main():
             for i in listofgames:
                 c = {'title': i, 'hide': False}
                 response['response']['buttons'].append(c)
-
         elif any([i == "шахматы" for i in qq.split()]):
             games[event['session']['user_id']] = ["chess", "none"]
             response['response']['card'] = {}
@@ -457,4 +464,4 @@ def main():
 
 
 port = int(os.environ.get("PORT", 5000))
-app.run(host='0.0.0.0', port=port, ssl_context=('cert.pem', 'key.pem'))
+app.run(host='0.0.0.0', port=port)
