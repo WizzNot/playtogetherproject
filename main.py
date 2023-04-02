@@ -241,17 +241,17 @@ def main():
                 sessionStorage[event['session']['user_id']] = chess.Board()
                 aiboards[event['session']['user_id']] = bd.new()
                 board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
-                with open(r"/tmp/board.svg", "wb") as f:
+                with open(os.getcwd() + r"/tmp/board.svg", "wb") as f:
                     f.write(board_svg)
                 doc = aw.Document()
                 builder = aw.DocumentBuilder(doc)
-                shape = builder.insert_image(r"/tmp/board.svg")
-                shape.image_data.save(r"/tmp/board.jpg")
-                with Image.open(r"/tmp/board.jpg") as img:
+                shape = builder.insert_image(os.getcwd() + r"/tmp/board.svg")
+                shape.image_data.save(os.getcwd() + r"/tmp/board.jpg")
+                with Image.open(os.getcwd() + r"/tmp/board.jpg") as img:
                     new_image = img.resize((172, 172))
                     third_image = new_image.crop((-108, 0, 172 + 108, 172))
-                    third_image.save(r'/tmp/answer.jpg')
-                image = yandex.downloadImageFile(r'/tmp/answer.jpg')
+                    third_image.save(os.getcwd() + r'/tmp/answer.jpg')
+                image = yandex.downloadImageFile(os.getcwd() + r'/tmp/answer.jpg')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
