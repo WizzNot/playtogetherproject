@@ -455,7 +455,7 @@ def main():
                 response['response']['buttons'] = [{'title': "Присоединиться", 'hide': True}]
                 if any([i in ('зайти', "присоединиться", "найти") for i in qq.split()]):
                     games[event['session']['user_id']][1] = 'friendconnect'
-                    response['response']['text'] = "Введите код комнаты. Спросите его у человека, который создал комнату"
+                    response['response']['text'] = "Введите код комнаты. Спросите его у человека, который создал комнату. Список существующих комнат: " + " ".join(list(sessionStorage.keys()))
                 elif all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
                     code = "".join([str(wordtonum[i]) if i in wordtonum else i for i in qq.split()])
                     if code in sessionStorage:
