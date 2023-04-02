@@ -14,7 +14,6 @@ from PIL import Image
 from flask import Flask, request, jsonify
 import json
 import os
-import aspose.words as aw
 
 
 app = Flask(__name__)
@@ -241,17 +240,16 @@ def main():
                 sessionStorage[event['session']['user_id']] = chess.Board()
                 aiboards[event['session']['user_id']] = bd.new()
                 board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
-                with open(os.getcwd() + r"/tmp/board.svg", "wb") as f:
+                with open("/tmp/board.svg", "wb") as f:
                     f.write(board_svg)
-                doc = aw.Document()
-                builder = aw.DocumentBuilder(doc)
-                shape = builder.insert_image(os.getcwd() + r"/tmp/board.svg")
-                shape.image_data.save(os.getcwd() + r"/tmp/board.jpg")
-                with Image.open(os.getcwd() + r"/tmp/board.jpg") as img:
-                    new_image = img.resize((172, 172))
-                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
-                    third_image.save(os.getcwd() + r'/tmp/answer.jpg')
-                image = yandex.downloadImageFile(os.getcwd() + r'/tmp/answer.jpg')
+                drawing = svg2rlg('/tmp/board.svg')
+                renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+                image_path="/tmp/board.png"
+                img = Image.open(image_path)
+                new_image = img.resize((172, 172))
+                third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                third_image.save('/tmp/answer.png')
+                image = yandex.downloadImageFile('/tmp/answer.png')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
@@ -420,16 +418,14 @@ def main():
             board_svg = chess.svg.board(board=sessionStorage[event['session']['user_id']]).encode('utf-8')
             with open("/tmp/board.svg", "wb") as f:
                 f.write(board_svg)
-            doc = aw.Document()
-            builder = aw.DocumentBuilder(doc)
-            shape = builder.insert_image("/tmp/board.svg")
-            shape.image_data.save("/tmp/board.jpg")
-            image_path="/tmp/board.jpg"
-            with Image.open(image_path, "rb") as img:
-                new_image = img.resize((172, 172))
-                third_image = new_image.crop((-108, 0, 172 + 108, 172))
-                third_image.save('/tmp/answer.jpg')
-            image = yandex.downloadImageFile('/tmp/answer.jpg')
+            drawing = svg2rlg('/tmp/board.svg')
+            renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
+            image_path="/tmp/board.png"
+            img = Image.open(image_path)
+            new_image = img.resize((172, 172))
+            third_image = new_image.crop((-108, 0, 172 + 108, 172))
+            third_image.save('/tmp/answer.png')
+            image = yandex.downloadImageFile('/tmp/answer.png')
             response['response']['card'] = {}
             response['response']['card']['image_id'] = image["id"]
             response['response']['card']['type'] = "BigImage"
