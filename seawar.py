@@ -149,6 +149,7 @@ def display_board(board, board_shoot, board_bot, empty_board, fill_board):
                                             ), fill="red", width=6)
             if board_shoot[i][j] == '*':
                 draw.rectangle((500 + j * 38, 32 + i * 38, 534 + j * 38, 66 + i * 38), fill="grey", outline="grey")
+    img.thumbnail(size=(776, 344))
     img.save(fill_board, "PNG")
 
 
