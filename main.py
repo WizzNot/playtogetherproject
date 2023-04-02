@@ -336,13 +336,11 @@ def main():
                 if len(list(sessionStorage[code][0].legal_moves)) == 0:
                     if sessionStorage[code][0].is_stalemate():
                         response['response']['text'] = "Ничья! Хорошая игра."
-                        sessionStorage.pop(code)
                         friendsgames.pop(event['session']['user_id'])
                         return response
                     elif sessionStorage[code][0].is_checkmate():
                         response['response']['text'] = "Вы победили! Хорошая игра."
                         games.pop(event['session']['user_id'])
-                        sessionStorage.pop(code)
                         friendsgames.pop(event['session']['user_id'])
                         profiles[event['session']['user_id']] += 25
                         return response
@@ -460,7 +458,7 @@ def main():
         else:
             response["response"]["text"] = random.choice(["Извините, я вас не понимаю. Попробуйте попросить помощь", "Я не знаю таких команд. Попробуйте спросить что я умею", "Увы, на такое меня не программировали. Попросите помощи"])
             response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
-    return json.dumps(response)
+    return json.dumps(response)	
 
 
 port = int(os.environ.get("PORT", 5000))
