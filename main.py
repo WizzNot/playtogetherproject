@@ -345,15 +345,13 @@ def main():
                     renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
                     image_path="/tmp/board.png"
                     img = Image.open(image_path)
-                    new_image = img.resize((172, 172))
-                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                    new_image = img.resize((258, 258))
+                    third_image = new_image.crop((-162, 0, 258 + 162, 258))
                     third_image.save('/tmp/answer.png')
                     image = yandex.downloadImageFile('/tmp/answer.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
-                    response['response']['card']['title'] = "Шахматы"
-                    response['response']['card']['description'] = random.choice(["Да начнётся игра!", "Удачной игры!"])
                     response["response"]["text"] = random.choice(["Да начнётся игра!", "Удачной игры!"])
                 elif any([i == "случайный" for i in qq.split()]):
                     # games[event['session']['user_id']][1] = "random"
@@ -402,15 +400,13 @@ def main():
                         renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
                         image_path="/tmp/board.png"
                         img = Image.open(image_path)
-                        new_image = img.resize((172, 172))
-                        third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                        new_image = img.resize((258, 258))
+                        third_image = new_image.crop((-162, 0, 258 + 162, 258))
                         third_image.save('/tmp/answer.png')
                         image = yandex.downloadImageFile('/tmp/answer.png')
                         response['response']['card'] = {}
                         response['response']['card']['image_id'] = image["id"]
                         response['response']['card']['type'] = "BigImage"
-                        response['response']['card']['title'] = "Шахматы"
-                        response['response']['card']['description'] = random.choice(["Ваш ход!", "Противник совершил ход!"])
                         return response
                     qq = rustochess(qq)
                     if qq not in [str(i) for i in sessionStorage[code][0].legal_moves]:
@@ -422,15 +418,13 @@ def main():
                         renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
                         image_path="/tmp/board.png"
                         img = Image.open(image_path)
-                        new_image = img.resize((172, 172))
-                        third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                        new_image = img.resize((258, 258))
+                        third_image = new_image.crop((-162, 0, 258 + 162, 258))
                         third_image.save('/tmp/answer.png')
                         image = yandex.downloadImageFile('/tmp/answer.png')
                         response['response']['card'] = {}
                         response['response']['card']['image_id'] = image["id"]
                         response['response']['card']['type'] = "BigImage"
-                        response['response']['card']['title'] = "Шахматы"
-                        response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
                         return response
                     sessionStorage[code][0].push_uci(qq)
                     sessionStorage[code][1] = event['session']['user_id']
@@ -456,15 +450,13 @@ def main():
                     renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
                     image_path="/tmp/board.png"
                     img = Image.open(image_path)
-                    new_image = img.resize((172, 172))
-                    third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                    new_image = img.resize((258, 258))
+                    third_image = new_image.crop((-162, 0, 258 + 162, 258))
                     third_image.save('/tmp/answer.png')
                     image = yandex.downloadImageFile('/tmp/answer.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
-                    response['response']['card']['title'] = "Шахматы"
-                    response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
             elif games[event['session']['user_id']][1] == 'friendchoice':
                 response['response']['buttons'] = [{'title': "Присоединиться", 'hide': True}]
                 if any([i in ('зайти', "присоединиться", "найти") for i in qq.split()]):
@@ -482,7 +474,7 @@ def main():
             elif games[event['session']['user_id']][0] == 'chess' and games[event['session']['user_id']][1] == 'ai':
                 qq = rustochess(qq)
                 if qq not in [str(i) for i in sessionStorage[event['session']['user_id']].legal_moves]:
-                    response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А 2 на А4, либо вводите a2a4", "Неправильно! Вводите в формате b2b4, либо говорите Б 2 на Б 4"]) + qq
+                    response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А 2 на А4, либо вводите a2a4", "Неправильно! Вводите в формате b2b4, либо говорите Б 2 на Б 4"]) + "Вы попытались сходить: " + qq
                     return response
                 lst = amove(qq, aiboards[event['session']['user_id']])
                 sessionStorage[event['session']['user_id']].push_uci(qq)
@@ -521,15 +513,13 @@ def main():
                 renderPM.drawToFile(drawing, '/tmp/board.png', fmt='PNG')
                 image_path="/tmp/board.png"
                 img = Image.open(image_path)
-                new_image = img.resize((172, 172))
-                third_image = new_image.crop((-108, 0, 172 + 108, 172))
+                new_image = img.resize((258, 258))
+                third_image = new_image.crop((-162, 0, 258 + 162, 258))
                 third_image.save('/tmp/answer.png')
                 image = yandex.downloadImageFile('/tmp/answer.png')
                 response['response']['card'] = {}
                 response['response']['card']['image_id'] = image["id"]
                 response['response']['card']['type'] = "BigImage"
-                response['response']['card']['title'] = "Шахматы"
-                response['response']['card']['description'] = random.choice(["Отличный ход!", "Следующий ход!"])
                 # response["response"]["text"] = printchessboard(str(sessionStorage[event['session']['user_id']]))
             else:
                 response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то другое"
