@@ -164,11 +164,15 @@ class YandexImages(object):
 def rustoseaWar(qq):
     otv = [0, 0]
     bukvi = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
-    ruseng = {"джи": "g", "ф": "f", "а": "a", "б": "b", "ц": "c", "си": "c", "д": "d", "ди": "d", "е": "e", "и": "e", "эф": "f", "г": "g", "аш": "h", "х": "h", "ай": "i", "и": "i", "джей": "j", "же": "j", "жэ": "j", "далее": "d", "быть": "e"}
+    ruseng = {"с": "c", "джи": "g", "ф": "f", "а": "a", "б": "b", "ц": "c", "си": "c", "д": "d", "ди": "d", "е": "e", "и": "e", "эф": "f", "г": "g", "аш": "h", "х": "h", "ай": "i", "и": "i", "джей": "j", "же": "j", "жэ": "j", "далее": "d", "быть": "e"}
     wordnum = {"один": "1", "два": "2", "три": "3", "четыре": "4", "пять": "5", "шесть": "6", "семь": "7", "восемь": "8", "девять": "9", "десять": "10"}
+    if " " not in qq:
+        qq = qq[0] + " " + qq[1:]
     for i in qq.split():
         if i in ruseng:
             otv[1] = bukvi.index(ruseng[i])
+        elif i in bukvi:
+            otv[1] = bukvi.index(i)
         elif i in wordnum:
             otv[0] = int(wordnum[i]) - 1
         else:
@@ -257,23 +261,31 @@ def main():
             near_list = [(0, -1), (0, 1), (1, 0), (-1, 0)]
             all_near_list = [(0, -1), (0, 1), (1, 0), (-1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]
             diag_near_list=[(-1, -1), (-1, 1), (1, -1), (1, 1)]
-            if any([i == "компьютер" for i in qq.split()]):
-                games[event['session']['user_id']][1] = "ai"
-                bot_board = generate_board()
-                player_board = generate_board()
-                bot_board_shoot = generate_white_board()
-                player_board_shoot = generate_white_board()
-                bot_memory = []
-                display_board(player_board, player_board_shoot, bot_board, "Pl9Xy.png", "kartin.png")
-                image = yandex.downloadImageFile('kartin.png')
-                response['response']['card'] = {}
-                response['response']['card']['image_id'] = image["id"]
-                response['response']['card']['type'] = "BigImage"
-                response['response']['card']['title'] = "Морской Бой"
-                response['response']['card']['description'] = random.choice(["Да начнётся игра!", "Удачной игры!", "Ваше поле"])
-                response['response']['text'] = response['response']['card']['description']
-                sessionStorage[event['session']['user_id']] = [player_board, player_board_shoot]
-                aiboards[event['session']['user_id']] = [bot_board, bot_board_shoot, bot_memory, near_list, all_near_list]
+            if games[event['session']['user_id']][1] == "none":
+                if any([i == "компьютер" for i in qq.split()]):
+                    games[event['session']['user_id']][1] = "ai"
+                    bot_board = generate_board()
+                    player_board = generate_board()
+                    bot_board_shoot = generate_white_board()
+                    player_board_shoot = generate_white_board()
+                    bot_memory = []
+                    display_board(player_board, player_board_shoot, bot_board, "kartinki_morskoy_boy_8_08082042.png", "kartin.png")
+                    image = yandex.downloadImageFile('kartin.png')
+                    response['response']['card'] = {}
+                    response['response']['card']['image_id'] = image["id"]
+                    response['response']['card']['type'] = "BigImage"
+                    response['response']['card']['title'] = "Морской Бой"
+                    response['response']['card']['description'] = random.choice(["Да начнётся игра!", "Удачной игры!", "Ваше поле"])
+                    response['response']['text'] = response['response']['card']['description']
+                    sessionStorage[event['session']['user_id']] = [player_board, player_board_shoot]
+                    aiboards[event['session']['user_id']] = [bot_board, bot_board_shoot, bot_memory, near_list, all_near_list]
+                if any([i == "человек" for i in qq.split()]):
+                    games[event['session']['user_id']][1] = "friendchoice"
+                    response["response"]["text"] = "Создать комнату или присоединиться? Если хотите создать, то введите код комнаты."
+                    cd = str(random.randint(100, 999))
+                    while cd in sessionStorage:
+                        cd = str(random.randint(100, 999))
+                    response['response']['buttons'] = [{'title': cd, 'hide': True}, {'title': "Присоединиться", 'hide': True}]
             elif games[event['session']['user_id']][1] == "ai":
                 player_board = sessionStorage[event['session']['user_id']][0]
                 player_board_shoot = sessionStorage[event['session']['user_id']][1]
@@ -290,7 +302,7 @@ def main():
                 res = shoot(x, y, bot_board, player_board_shoot)
                 if res != 'Попал' and res != 'Уничтожил!':
                     mess = bot_shoot(player_board, bot_board_shoot)
-                    display_board(player_board, player_board_shoot, bot_board, "Pl9Xy.png", "kartin.png")
+                    display_board(player_board, player_board_shoot, bot_board, "kartinki_morskoy_boy_8_08082042.png", "kartin.png")
                     image = yandex.downloadImageFile('kartin.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
@@ -309,7 +321,7 @@ def main():
                         response['response']['card']['description'] = random.choice(["Уничтожил!", "Твой корабаль был потоплен(", "кажись минус караблик", "С кем не бывает! потерял - так потерял"])
                         response['response']['text'] = response['response']['card']['description']
                 else:
-                    display_board(player_board, player_board_shoot, bot_board, "Pl9Xy.png", "kartin.png")
+                    display_board(player_board, player_board_shoot, bot_board, "kartinki_morskoy_boy_8_08082042.png", "kartin.png")
                     image = yandex.downloadImageFile('kartin.png')
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
@@ -318,10 +330,148 @@ def main():
                     response['response']['text'] = response['response']['card']['description']
                     if game_over(bot_board) and game_over(player_board):
                         response['response']['text'] = random.choice(["как же так... ничья", "НИЧЬЯ!", "ни кто не выйграл, но ни кто не проиграл", "ты проиграл... как и противник"])
+                        games.pop(event['session']['user_id'])
                     elif game_over(bot_board):
                         response['response']['text'] = random.choice(["ТЫ ВЫЙГРАЛ!", "ПОБЕДА", "ВИКТОРИИ", "Да ты на лаки просто *_*"])
+                        games.pop(event['session']['user_id'])
                     elif game_over(player_board):
                         response['response']['text'] = random.choice(["ТЫ ПРОИГРАЛ! УРАА", "ну проиграл и проиграл", "ПОРАЖАНИЕ!!!", "Нуб", "да лан"])
+                        games.pop(event['session']['user_id'])
+            elif games[event['session']['user_id']][1] == 'friendchoice':
+                response['response']['buttons'] = [{'title': "Присоединиться", 'hide': True}]
+                if any([i in ('зайти', "присоединиться", "найти") for i in qq.split()]):
+                    games[event['session']['user_id']][1] = 'friendconnect'
+                    response['response']['text'] = "Введите код комнаты. Спросите его у человека, который создал комнату. Список существующих комнат: " + " ".join(list(sessionStorage.keys()))
+                elif all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
+                    code = "".join([str(wordtonum[i]) if i in wordtonum else i for i in qq.split()])
+                    if code in sessionStorage:
+                        response['response']['text'] = "Такой код уже есть в списке игр! Придумайте другой."
+                        return response
+                    games[event['session']['user_id']][1] = 'friendgame'
+                    friendsgames[event['session']['user_id']] = code
+                    guest_board = generate_board()
+                    host_board = generate_board()
+                    guest_board_shoot = generate_white_board()
+                    host_board_shoot = generate_white_board()
+                    storona = "guest"
+                    sessionStorage[code] = [guest_board, host_board, guest_board_shoot, host_board_shoot, event['session']['user_id'], storona]
+                    response['response']['text'] = "Комната создана! Скажите другу зайти по вашему коду и сделать ход. " + code
+            elif games[event['session']['user_id']][1] == 'friendconnect':
+                if all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
+                    code = "".join([str(wordtonum[i]) if i in wordtonum else i for i in qq.split()])
+                    if code in sessionStorage:
+                        friendsgames[event['session']['user_id']] = code
+                        games[event['session']['user_id']][1] = "friendgame"
+                        response['response']['text'] = "Игра началась! Сделайте ход."
+                    else:
+                        response['response']['text'] = "Такой комнаты нет! Убедитесь, что ваш друг её создал и перепроверьте код. " + code + " коды которые есть: " + " ".join(list(sessionStorage.keys()))
+                else:
+                    response['response']['text'] = "Некорректно введён код! Вводите код без лишних слов."
+            elif games[event['session']['user_id']][1] == 'friendgame':
+                code = friendsgames[event['session']['user_id']]
+                if sessionStorage[code][-2] == event['session']['user_id']:
+                    response['response']['text'] = "Ваш противник ещё не сходил! Ожидайте."
+                    response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
+                else:
+                    storona = sessionStorage[code][-1]
+                    guest_board = sessionStorage[code][0]
+                    host_board = sessionStorage[code][1]
+                    guest_board_shoot = sessionStorage[code][2]
+                    host_board_shoot = sessionStorage[code][3]
+                    print(qq)
+                    if any([i in ("проверить", "проверка") for i in qq.split()]):
+                        print(storona)
+                        response['response']['text'] = "противник совершил ход"
+                        if storona == "guest":
+                            display_board(guest_board, guest_board_shoot, host_board, "kartinki_morskoy_boy_8_08082042.png", "kartin_guest.png")
+                            image = yandex.downloadImageFile('kartin_guest.png')
+                            response['response']['card'] = {}
+                            response['response']['card']['image_id'] = image["id"]
+                            response['response']['card']['type'] = "BigImage"
+                            response['response']['text'] = "ЛОЛ ГУЕСТ"
+                            if game_over(guest_board):
+                                response['response']['text'] = random.choice(["ТЫ ПРОИГРАЛ! УРАА", "ну проиграл и проиграл", "ПОРАЖАНИЕ!!!", "Нуб", "да лан"])   
+                                response['response']['text'] = response['response']['card']['description']
+                                games.pop(event['session']['user_id'])
+                                sessionStorage.pop(friendsgames[event['session']['user_id']])
+                                friendsgames.pop(event['session']['user_id'])
+                        else:
+                            display_board(host_board, host_board_shoot, guest_board, "kartinki_morskoy_boy_8_08082042.png", "kartin_host.png")
+                            image = yandex.downloadImageFile('kartin_host.png')
+                            response['response']['card'] = {}
+                            response['response']['card']['image_id'] = image["id"]
+                            response['response']['card']['type'] = "BigImage"
+                            response['response']['text'] = "ЛОЛ ХОСТ"
+                            if game_over(host_board):
+                                response['response']['text'] = random.choice(["ТЫ ПРОИГРАЛ! УРАА", "ну проиграл и проиграл", "ПОРАЖАНИЕ!!!", "Нуб", "да лан"])   
+                                response['response']['text'] = response['response']['card']['description']
+                                games.pop(event['session']['user_id'])
+                                sessionStorage.pop(friendsgames[event['session']['user_id']])
+                                friendsgames.pop(event['session']['user_id'])
+                        return response
+                    qq = rustoseaWar(qq)
+                    if qq not in create_legal_moves(guest_board_shoot) and storona == "guest":
+                        response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А2, либо вводите", "Неправильно! Вводите в формате А2, либо говорите"])
+                        display_board(guest_board, guest_board_shoot, host_board, "kartinki_morskoy_boy_8_08082042.png", "kartin_guest.png")
+                        image = yandex.downloadImageFile('kartin_guest.png')
+                        response['response']['card'] = {}
+                        response['response']['card']['image_id'] = image["id"]
+                        response['response']['card']['type'] = "BigImage"
+                        response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А2, либо вводите", "Неправильно! Вводите в формате А2, либо говорите"])
+                        return response
+                    elif qq not in create_legal_moves(host_board_shoot) and storona == "host":
+                        display_board(host_board, host_board_shoot, guest_board, "kartinki_morskoy_boy_8_08082042.png", "kartin_host.png")
+                        image = yandex.downloadImageFile('kartin_host.png')
+                        response['response']['card'] = {}
+                        response['response']['card']['image_id'] = image["id"]
+                        response['response']['card']['type'] = "BigImage"
+                        response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А2, либо вводите", "Неправильно! Вводите в формате А2, либо говорите"])
+                        return response
+                    if storona == "guest":
+                        x = qq[0]
+                        y = qq[1]
+                        res = shoot(x, y, host_board, guest_board_shoot)
+                        display_board(guest_board, guest_board_shoot, host_board, "kartinki_morskoy_boy_8_08082042.png", "kartin_guest.png")
+                        image = yandex.downloadImageFile('kartin_guest.png')
+                        response['response']['card'] = {}
+                        response['response']['card']['image_id'] = image["id"]
+                        response['response']['card']['type'] = "BigImage"
+                        response['response']['text'] = "вы сходили"
+                        if res == "Мимо":
+                            sessionStorage[code][-1] = "host"
+                            sessionStorage[code][-2] = event['session']['user_id']
+                        print(res, sessionStorage[code][-1], sessionStorage[code][-2])
+                        if game_over(host_board):
+                            response['response']['card']['description'] = random.choice(["ТЫ ВЫЙГРАЛ!", "ПОБЕДА", "ВИКТОРИИ", "Да ты на лаки просто *_*"])
+                            response['response']['text'] = response['response']['card']['description']
+                            sessionStorage[code][-2] = event['session']['user_id']
+                            games.pop(event['session']['user_id'])
+                            friendsgames.pop(event['session']['user_id'])
+                            profiles[event['session']['user_id']] += 25
+                    else:
+                        x = qq[0]
+                        y = qq[1]
+                        res = shoot(x, y, guest_board, host_board_shoot)
+                        display_board(host_board, host_board_shoot, guest_board, "kartinki_morskoy_boy_8_08082042.png", "kartin_host.png")
+                        image = yandex.downloadImageFile('kartin_host.png')
+                        response['response']['card'] = {}
+                        response['response']['card']['image_id'] = image["id"]
+                        response['response']['card']['type'] = "BigImage"
+                        response['response']['text'] = "вы сходили"
+                        if res == "Мимо":
+                            sessionStorage[code][-1] = "guest"
+                            sessionStorage[code][-2] = event['session']['user_id']
+                        print(res, sessionStorage[code][-1], sessionStorage[code][-2])
+                        if game_over(host_board):
+                            response['response']['card']['description'] = random.choice(["ТЫ ВЫЙГРАЛ!", "ПОБЕДА", "ВИКТОРИИ", "Да ты на лаки просто *_*"])
+                            response['response']['text'] = response['response']['card']['description']
+                            games.pop(event['session']['user_id'])
+                            sessionStorage[code][-2] = event['session']['user_id']
+                            friendsgames.pop(event['session']['user_id'])
+                            if event['session']['user_id'] in profiles:
+                                profiles[event['session']['user_id']] += 25
+                            else:
+                                profiles[event['session']['user_id']] = 25
         elif games[event['session']['user_id']][0] == 'chess':
             if games[event['session']['user_id']][1] == "none":
                 if any([i == "человек" for i in qq.split()]):
@@ -557,9 +707,13 @@ def main():
         else:
             response["response"]["text"] = random.choice(["Извините, я вас не понимаю. Попробуйте попросить помощь", "Я не знаю таких команд. Попробуйте спросить что я умею", "Увы, на такое меня не программировали. Попросите помощи"])
             response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
-    return json.dumps(response)	
+    return json.dumps(response)
+
+
+@app.route('/', methods=["GET"])
+def qwe():
+    return "Это навык для алисы!"
 
 
 port = int(os.environ.get("PORT", 5000))
 app.run(host='0.0.0.0', port=port)
-
