@@ -193,11 +193,10 @@ def rustochess(qq):
         o = []
         for i in range(len(qq)):
             if qq[i].isdigit():
-                o.append(' ' + qq[i])
+                o.append(' ' + qq[i] + " ")
             else:
                 o.append(qq[i])
         qq = ''.join(o)
-        print(qq)
     for i in qq.split():
         if i in ruseng:
             otv += ruseng[i]
