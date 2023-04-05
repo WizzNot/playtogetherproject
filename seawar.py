@@ -124,32 +124,31 @@ def display_board(board, board_shoot, board_bot, empty_board, fill_board):
     for i in range(10):
         for j in range(10):
             if board[i][j] == '1':
-                draw.rectangle((36 + j * 38, 33 + i * 38, 70 + j * 38, 67 + i * 38), fill="blue", outline="blue")
+                draw.rectangle((172 + j * 38, 70 + i * 38, 206 + j * 38, 104 + i * 38), fill="blue", outline="blue")
             elif board[i][j] == '*':
-                draw.rectangle((36 + j * 38, 33 + i * 38, 70 + j * 38, 67 + i * 38), fill="grey", outline="grey")
+                draw.rectangle((172 + j * 38, 70 + i * 38, 206 + j * 38, 104 + i * 38), fill="grey", outline="grey")
             elif board[i][j] == '#':
-                draw.rectangle((36 + j * 38, 33 + i * 38, 70 + j * 38, 67 + i * 38), fill="blue", outline="blue")
+                draw.rectangle((172 + j * 38, 70 + i * 38, 206 + j * 38, 104 + i * 38), fill="blue", outline="blue")
                 draw.line(xy=(
-                                (37 + j * 38, 34 + i * 38),
-                                (68 + j * 38, 65 + i * 38),
+                                (173 + j * 38, 71 + i * 38),
+                                (204 + j * 38, 102 + i * 38),
                                             ), fill="red", width=6)
                 draw.line(xy=(
-                                (68 + j * 38, 35 + i * 38),
-                                (37 + j * 38, 66 + i * 38),
+                                (204 + j * 38, 72 + i * 38),
+                                (173 + j * 38, 103 + i * 38),
                                             ), fill="red", width=6)
             if board_shoot[i][j] == '#':
-                draw.rectangle((500 + j * 38, 32 + i * 38, 534 + j * 38, 66 + i * 38), fill="blue", outline="blue")
+                draw.rectangle((636 + j * 38, 69 + i * 38, 670 + j * 38, 103 + i * 38), fill="blue", outline="blue")
                 draw.line(xy=(
-                                (501 + j * 38, 33 + i * 38),
-                                (532 + j * 38, 64 + i * 38),
+                    (637 + j * 38, 70 + i * 38),
+                    (668 + j * 38, 101 + i * 38),
                                             ), fill="red", width=6)
                 draw.line(xy=(
-                                (532 + j * 38, 34 + i * 38),
-                                (501 + j * 38, 65 + i * 38),
+                    (668 + j * 38, 71 + i * 38),
+                    (637 + j * 38, 102 + i * 38),
                                             ), fill="red", width=6)
             if board_shoot[i][j] == '*':
-                draw.rectangle((500 + j * 38, 32 + i * 38, 534 + j * 38, 66 + i * 38), fill="grey", outline="grey")
-    img.thumbnail(size=(776, 344))
+                draw.rectangle((636 + j * 38, 69 + i * 38, 670 + j * 38, 103 + i * 38), fill="grey", outline="grey")
     img.save(fill_board, "PNG")
 
 
@@ -174,7 +173,7 @@ def mark_ship(board):
         for j in range(10):
             if board[i][j]=='#':
                 for koef in all_near_list:
-                    if 0 <= i + koef[0] <= 9 and 0 <= j + koef[1] <= 9 and board[i + koef[0]][j + koef[1]]!='#':
+                    if 0 <= i + koef[0] <= 9 and 0 <= j + koef[1] <= 9 and board[i + koef[0]][j + koef[1]]!='#' and board[i + koef[0]][j + koef[1]]!='1':
                         board[i + koef[0]][j + koef[1]]='*'
 
 
