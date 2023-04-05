@@ -197,7 +197,6 @@ def rustochess(dd):
             else:
                 o += dd[i]
         dd = o.rstrip(' ')
-    print(dd)
     for i in dd.split():
         if i in ruseng:
             otv += ruseng[i]
@@ -312,7 +311,6 @@ def main():
                 bot_board_shoot = aiboards[event['session']['user_id']][1]
                 bot_memory = aiboards[event['session']['user_id']][2]
                 qq = rustoseaWar(qq)
-                print(qq)
                 if qq not in create_legal_moves(player_board_shoot):
                     response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А2, либо вводите", "Неправильно! Вводите в формате А2, либо говорите"])
                     return response
@@ -326,7 +324,6 @@ def main():
                     response['response']['card'] = {}
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
-                    print(mess)
                     if mess[-1] == 'Мимо':
                        response['response']['card']['description'] = random.choice(["Не в этот раз(как и для бота)", "Не попал(", "Не повезло - не повезло", "С кем не бывает!", "компьютер тоже промахнулся", "компьютер"])
                        response['response']['text'] = response['response']['card']['description']
@@ -397,9 +394,7 @@ def main():
                     host_board = sessionStorage[code][1]
                     guest_board_shoot = sessionStorage[code][2]
                     host_board_shoot = sessionStorage[code][3]
-                    print(qq)
                     if any([i in ("проверить", "проверка") for i in qq.split()]):
-                        print(storona)
                         response['response']['text'] = "противник совершил ход"
                         if storona == "guest":
                             display_board(guest_board, guest_board_shoot, host_board, "lolka — копия.png", "kartin_guest.png")
@@ -464,7 +459,6 @@ def main():
                         if res == "Мимо":
                             sessionStorage[code][-1] = "host"
                             sessionStorage[code][-2] = event['session']['user_id']
-                        print(res, sessionStorage[code][-1], sessionStorage[code][-2])
                         if game_over(host_board):
                             response['response']['card']['description'] = random.choice(["ТЫ ВЫЙГРАЛ!", "ПОБЕДА", "ВИКТОРИИ", "Да ты на лаки просто *_*"])
                             response['response']['text'] = response['response']['card']['description']
@@ -486,7 +480,6 @@ def main():
                         if res == "Мимо":
                             sessionStorage[code][-1] = "guest"
                             sessionStorage[code][-2] = event['session']['user_id']
-                        print(res, sessionStorage[code][-1], sessionStorage[code][-2])
                         if game_over(host_board):
                             response['response']['card']['description'] = random.choice(["ТЫ ВЫЙГРАЛ!", "ПОБЕДА", "ВИКТОРИИ", "Да ты на лаки просто *_*"])
                             response['response']['text'] = response['response']['card']['description']
