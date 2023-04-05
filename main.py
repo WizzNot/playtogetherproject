@@ -189,6 +189,14 @@ def rustochess(qq):
     otv = ''
     ruseng = {"джи": "g", "ф": "f", "а": "a", "б": "b", "ц": "c", "си": "c", "д": "d", "ди": "d", "е": "e", "и": "e", "эф": "f", "г": "g", "аш": "h", "х": "h", "далее": "d", "быть": "e"}
     wordnum = {"один": "1", "два": "2", "три": "3", "четыре": "4", "пять": "5", "шесть": "6", "семь": "7", "восемь": "8"}
+    if ' ' not in qq:
+        o = []
+        for i in range(len(qq)):
+            if qq[i].isdigit():
+                o.append(' ' + qq[i])
+            else:
+                o.append(qq[i])
+        qq = ''.join(o)
     for i in qq.split():
         if i in ruseng:
             otv += ruseng[i]
