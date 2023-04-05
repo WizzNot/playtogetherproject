@@ -234,7 +234,7 @@ def main():
     morph = pymorphy2.MorphAnalyzer()
     qq = " ".join([morph.parse(i)[0].normal_form for i in event['request']['original_utterance'].lower().rstrip(".").split()])
     if any([i in ("помощь", "подсказать", "помоги", "помогать") for i in qq.split()]):
-        otv = random.choice(["Вы можете вывести список игр по команде играть, далее выбрать нужную игру и соперника, после чего начнется игра. Либо вы можете посмотреть свой рейтинг по команде профиль", "Вы можете вывести список игр по команде играть, посмотреть свой профиль по команде профиль, начать игру по названию желаемой игры."])
+        otv = random.choice(["Вы можете вывести список игр по команде играть, далее выбрать нужную игру и соперника, после чего начнется игра. Либо вы можете посмотреть свой рейтинг по команде профиль. Чтобы выйти из игры скажите назад или выход", "Вы можете вывести список игр по команде играть, посмотреть свой профиль по команде профиль, начать игру по названию желаемой игры. Чтобы выйти из игры скажите назад"])
         response["response"]["text"] = otv
         response['response']['buttons'] = [{"title": "Правила шахмат", "hide": True}, {"title": "Правила морского боя", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         return response
@@ -270,7 +270,7 @@ def main():
         if event['session']['user_id'] not in profiles:
             profiles[event['session']['user_id']] = 0
     elif event['session']['user_id'] in games:
-        if any([i in ('выход', 'закончить', 'выйти', 'назад') for i in qq.split()]):
+        if any([i in ('выход', 'закончить', 'выйти', 'назад', 'стоп') for i in qq.split()]):
             games.pop(event['session']['user_id'])
             response["response"]["text"] = "Вы вернулись в главное меню. Можете попросить помощи, посмотреть профиль, или начать игру."
             response['response']['buttons'] = [{"title": "Помощь", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
@@ -354,10 +354,10 @@ def main():
                         response['response']['text'] = random.choice(["ТЫ ПРОИГРАЛ! УРАА", "ну проиграл и проиграл", "ПОРАЖАНИЕ!!!", "Нуб", "да лан"])
                         games.pop(event['session']['user_id'])
             elif games[event['session']['user_id']][1] == 'friendchoice':
-                response['response']['buttons'] = [{'title': "Присоединиться", 'hide': True}]
+                response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
                 if any([i in ('зайти', "присоединиться", "найти") for i in qq.split()]):
                     games[event['session']['user_id']][1] = 'friendconnect'
-                    response['response']['text'] = "Введите код комнаты. Спросите его у друга, который создал комнату"
+                    response['response']['text'] = "Введите код комнаты. Спросите его у друга, который создал комнату. Комнаты, которые есть: " + " ".join(list(sessionStorage.keys()))
                 elif all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
                     code = "".join([str(wordtonum[i]) if i in wordtonum else i for i in qq.split()])
                     if code in sessionStorage:
@@ -620,7 +620,7 @@ def main():
                     response['response']['card']['image_id'] = image["id"]
                     response['response']['card']['type'] = "BigImage"
             elif games[event['session']['user_id']][1] == 'friendchoice':
-                response['response']['buttons'] = [{'title': "Присоединиться", 'hide': True}]
+                response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
                 if any([i in ('зайти', "присоединиться", "найти") for i in qq.split()]):
                     games[event['session']['user_id']][1] = 'friendconnect'
                     response['response']['text'] = "Введите код комнаты. Спросите его у человека, который создал комнату. Список существующих комнат: " + " ".join(list(sessionStorage.keys()))
