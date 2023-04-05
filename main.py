@@ -197,6 +197,7 @@ def rustochess(qq):
             else:
                 o.append(qq[i])
         qq = ''.join(o)
+        print(qq)
     for i in qq.split():
         if i in ruseng:
             otv += ruseng[i]
