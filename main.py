@@ -195,7 +195,7 @@ def rustochess(dd):
             if dd[i].isdigit():
                 o = o + ' ' + dd[i] + " "
             else:
-                o += qq[i]
+                o += dd[i]
         dd = o.rstrip(' ')
     print(dd)
     for i in dd.split():
