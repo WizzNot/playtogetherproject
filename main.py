@@ -185,19 +185,20 @@ def rustoseaWar(qq):
 
 
 
-def rustochess(qq):
+def rustochess(dd):
     otv = ''
     ruseng = {"джи": "g", "ф": "f", "а": "a", "б": "b", "ц": "c", "си": "c", "д": "d", "ди": "d", "е": "e", "и": "e", "эф": "f", "г": "g", "аш": "h", "х": "h", "далее": "d", "быть": "e"}
     wordnum = {"один": "1", "два": "2", "три": "3", "четыре": "4", "пять": "5", "шесть": "6", "семь": "7", "восемь": "8"}
-    if ' ' not in qq:
-        o = []
-        for i in range(len(qq)):
-            if qq[i].isdigit():
-                o.append(' ' + qq[i] + " ")
+    if ' ' not in dd:
+        o = ''
+        for i in range(len(dd)):
+            if dd[i].isdigit():
+                o = o + ' ' + dd[i] + " "
             else:
-                o.append(qq[i])
-        qq = ''.join(o)
-    for i in qq.split():
+                o += qq[i]
+        dd = o.rstrip(' ')
+    print(dd)
+    for i in dd.split():
         if i in ruseng:
             otv += ruseng[i]
         elif i in wordnum:
