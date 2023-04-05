@@ -230,7 +230,7 @@ def main():
         response["response"]["text"] = otv
         response['response']['buttons'] = [{"title": "Правила шахмат", "hide": True}, {"title": "Правила морского боя", "hide": True}, {"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
         return response
-    elif any([i == 'правила' for i in qq.split()]):
+    elif any([i == 'правило' for i in qq.split()]):
         if any([i == 'шахматы' for i in qq.split()]):
             response['response']['text'] = 'Ни одна из фигур, за исключением ладьи во время рокировки и коня, не может пересекать поле, занятое другой фигурой (перепрыгивать другие фигуры). Если фигура перемещается на поле, занятое фигурой противника, то фигура противника должна быть снята с доски игроком, который сделал ход. Такой ход называется взятием. Чтобы сходить, вам нужно сначала назвать клетку, в которой расположена фигура, которой вы хотите совершить ход, а после назвать клетку, в которую вы хотите переместить данную фигуру.'
             response['response']['buttons'] = [{"title": "Играть", "hide": True}, {"title": "Профиль", "hide": True}]
@@ -270,6 +270,7 @@ def main():
             near_list = [(0, -1), (0, 1), (1, 0), (-1, 0)]
             all_near_list = [(0, -1), (0, 1), (1, 0), (-1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]
             diag_near_list=[(-1, -1), (-1, 1), (1, -1), (1, 1)]
+            
             if games[event['session']['user_id']][1] == "none":
                 if any([i == "компьютер" for i in qq.split()]):
                     games[event['session']['user_id']][1] = "ai"
@@ -397,7 +398,8 @@ def main():
                             response['response']['card'] = {}
                             response['response']['card']['image_id'] = image["id"]
                             response['response']['card']['type'] = "BigImage"
-                            response['response']['text'] = "Ваш ход"
+                            response['response']['card']['description'] = "Ваш ход"
+                            response['response']['text'] = response['response']['card']['description']
                             if game_over(guest_board):
                                 response['response']['text'] = random.choice(["ТЫ ПРОИГРАЛ! УРАА", "ну проиграл и проиграл", "ПОРАЖАНИЕ!!!", "Нуб", "да лан"])   
                                 response['response']['text'] = response['response']['card']['description']
@@ -410,7 +412,8 @@ def main():
                             response['response']['card'] = {}
                             response['response']['card']['image_id'] = image["id"]
                             response['response']['card']['type'] = "BigImage"
-                            response['response']['text'] = "Ваш ход"
+                            response['response']['card']['description'] = "Ваш ход"
+                            response['response']['text'] = response['response']['card']['description']
                             if game_over(host_board):
                                 response['response']['text'] = random.choice(["ТЫ ПРОИГРАЛ! УРАА", "ну проиграл и проиграл", "ПОРАЖАНИЕ!!!", "Нуб", "да лан"])   
                                 response['response']['text'] = response['response']['card']['description']
@@ -426,7 +429,8 @@ def main():
                         response['response']['card'] = {}
                         response['response']['card']['image_id'] = image["id"]
                         response['response']['card']['type'] = "BigImage"
-                        response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А2, либо вводите", "Неправильно! Вводите в формате А2, либо говорите"])
+                        response['response']['card']['description'] = random.choice(["Неправильный ход. Говорите в формате А2, либо вводите", "Неправильно! Вводите в формате А2, либо говорите"])
+                        response['response']['text'] = response['response']['card']['description']
                         return response
                     elif qq not in create_legal_moves(host_board_shoot) and storona == "host":
                         display_board(host_board, host_board_shoot, guest_board, "lolka — копия.png", "kartin_host.png")
@@ -434,7 +438,8 @@ def main():
                         response['response']['card'] = {}
                         response['response']['card']['image_id'] = image["id"]
                         response['response']['card']['type'] = "BigImage"
-                        response['response']['text'] = random.choice(["Неправильный ход. Говорите в формате А2, либо вводите", "Неправильно! Вводите в формате А2, либо говорите"])
+                        response['response']['card']['description'] = random.choice(["Неправильный ход. Говорите в формате А2, либо вводите вверные координаты", "Неправильно! Вводите вверные координаты, либо говорите в формате А2"])
+                        response['response']['text'] = response['response']['card']['description']
                         return response
                     if storona == "guest":
                         x = qq[0]
@@ -445,7 +450,8 @@ def main():
                         response['response']['card'] = {}
                         response['response']['card']['image_id'] = image["id"]
                         response['response']['card']['type'] = "BigImage"
-                        response['response']['text'] = "вы сходили"
+                        response['response']['card']['description'] = "вы сходили"
+                        response['response']['text'] = response['response']['card']['description']
                         if res == "Мимо":
                             sessionStorage[code][-1] = "host"
                             sessionStorage[code][-2] = event['session']['user_id']
@@ -466,7 +472,8 @@ def main():
                         response['response']['card'] = {}
                         response['response']['card']['image_id'] = image["id"]
                         response['response']['card']['type'] = "BigImage"
-                        response['response']['text'] = "вы сходили"
+                        response['response']['card']['description'] = "вы сходили"
+                        response['response']['text'] = response['response']['card']['description']
                         if res == "Мимо":
                             sessionStorage[code][-1] = "guest"
                             sessionStorage[code][-2] = event['session']['user_id']
@@ -514,7 +521,7 @@ def main():
                     response['response']['text'] = 'Эта ветка навыка ещё не закончена! Совсем скоро вы сможете поиграть с человеком'
                     response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}]
                 else:
-                    response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то человекое"
+                    response['response']['text'] = "Такого варианта у меня ещё нет. Выберите что то другое"
                     response['response']['buttons'] = [{'title': "человек", 'hide': True}, {'title': "Компьютер", 'hide': True}]
             elif games[event['session']['user_id']][1] == 'friendconnect':
                 if all([i in wordtonum for i in qq.split()]) or all([i.isdigit() for i in qq.split()]):
