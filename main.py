@@ -455,6 +455,7 @@ def main():
                         response['response']['card']['image_id'] = image["id"]
                         response['response']['card']['type'] = "BigImage"
                         response['response']['card']['description'] = "вы сходили"
+                        response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
                         response['response']['text'] = response['response']['card']['description']
                         if res == "Мимо":
                             sessionStorage[code][-1] = "host"
@@ -476,6 +477,7 @@ def main():
                         response['response']['card']['image_id'] = image["id"]
                         response['response']['card']['type'] = "BigImage"
                         response['response']['card']['description'] = "вы сходили"
+                        response['response']['buttons'] = [{'title': "Проверить", 'hide': True}]
                         response['response']['text'] = response['response']['card']['description']
                         if res == "Мимо":
                             sessionStorage[code][-1] = "guest"
