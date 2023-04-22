@@ -7,3 +7,6 @@ requests
 Pillow
 flask
 aspose-words
+json
+time
+cairosvg
